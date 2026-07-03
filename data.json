@@ -1,0 +1,240 @@
+{
+  "hubs": [
+    {"id": "Nature Alliance (Thailand)"}
+  ],
+  "charts": [
+    {
+      "id": "Regenerative Landscapes",
+      "titleNode": "_center",
+      "color": "#6F7042",
+      "image": "regenland@1.png",
+      "badgeW": 225,
+      "badgeH": 187,
+      "nodes": [
+        {"id": "_center", "label": ""},
+        {"id": "Sangsuree Power", "label": "Sangsuree Power", "partner": "Tara Climate Foundation", "stage": "Pilot"},
+        {"id": "FLF349 - Forest Restoration through Agroecology", "label": "FLF349 - Forest Restoration through Agroecology", "partner": "World Wide Fund for Nature", "stage": "Build"},
+        {"id": "Pai Regenerative Network", "label": "Pai Regenerative Network", "partner": "Pai Seedlings", "stage": "Validate"},
+        {"id": "Mangroves, Forests, Climate and Livelihoods Program", "label": "Mangroves, Forests, Climate and Livelihoods Program", "partner": "Landesa", "stage": "Build"},
+        {"id": "Grow CF", "label": "Grow CF", "partner": "RECOFTC", "stage": "Build"}
+      ],
+      "links": [
+        {"source": "_center", "target": "Sangsuree Power", "label": ""},
+        {"source": "_center", "target": "FLF349 - Forest Restoration through Agroecology", "label": ""},
+        {"source": "_center", "target": "Pai Regenerative Network", "label": ""},
+        {"source": "_center", "target": "Mangroves, Forests, Climate and Livelihoods Program", "label": ""},
+        {"source": "_center", "target": "Grow CF", "label": ""}
+      ]
+    },
+    {
+      "id": "Cultural Narratives",
+      "titleNode": "_center",
+      "color": "#FF9E74",
+      "image": "culturalnarrative@1.png",
+      "badgeW": 205,
+      "badgeH": 124,
+      "nodes": [
+        {"id": "_center", "label": ""},
+        {"id": "Inspiring Asia Micro Film Festival Thailand", "label": "Inspiring Asia Micro Film Festival Thailand", "partner": "Bangkok Documentary Club", "stage": "Scale"},
+        {"id": "Healing Arts Singapore", "label": "Healing Arts Singapore", "partner": "CULTURERUNNERS", "stage": "Scale"},
+        {"id": "Scholarships; ECCA-DMJX Photojournalism Award", "label": "Scholarships; ECCA-DMJX Photojournalism Award", "partner": "DMJX", "stage": "Validate"},
+        {"id": "Community Theatre for Social Change", "label": "Community Theatre for Social Change", "partner": "Gab Fai", "stage": "Build"},
+        {"id": "Bangkok Climate Action Week", "label": "Bangkok Climate Action Week", "partner": "JUTI", "stage": "Pilot"},
+        {"id": "Bangkok 1899", "label": "Bangkok 1899", "partner": "Creative Migration", "stage": "Build"},
+        {"id": "Nature x People", "label": "Nature x People", "partner": "Love Frankie", "stage": "Pilot"},
+        {"id": "Ghost 2568", "label": "Ghost 2568", "partner": "Bangkok CityCity Gallery", "stage": "Build"},
+        {"id": "Arts and Mental Health", "label": "Arts and Mental Health", "partner": "Nationalt Center for Kunst og Mental Sundhed (CKMS)", "stage": "Scale"},
+        {"id": "Arts-based Youth Development", "label": "Arts-based Youth Development", "partner": "Turning Tables Denmark", "stage": "Scale"}
+      ],
+      "links": [
+        {"source": "_center", "target": "Inspiring Asia Micro Film Festival Thailand", "label": ""},
+        {"source": "_center", "target": "Healing Arts Singapore", "label": ""},
+        {"source": "_center", "target": "Scholarships; ECCA-DMJX Photojournalism Award", "label": ""},
+        {"source": "_center", "target": "Community Theatre for Social Change", "label": ""},
+        {"source": "_center", "target": "Bangkok Climate Action Week", "label": ""},
+        {"source": "_center", "target": "Bangkok 1899", "label": ""},
+        {"source": "_center", "target": "Nature x People", "label": ""},
+        {"source": "_center", "target": "Ghost 2568", "label": ""},
+        {"source": "_center", "target": "Arts and Mental Health", "label": ""},
+        {"source": "_center", "target": "Arts-based Youth Development", "label": ""}
+      ]
+    },
+    {
+      "id": "Healthy Oceans",
+      "titleNode": "_center",
+      "color": "#3F8FFF",
+      "image": "healthyocean@1.png",
+      "badgeW": 213,
+      "badgeH": 140,
+      "nodes": [
+        {"id": "_center", "label": ""},
+        {"id": "30x30 SEA Ocean Fund", "label": "30x30 SEA Ocean Fund", "partner": "Asia Community Foundation", "stage": "Pilot"},
+        {"id": "Net Free Seas", "label": "Net Free Seas", "partner": "Environmental Justice Foundation", "stage": "Build"},
+        {"id": "Sea Guardians", "label": "Sea Guardians", "partner": "Thai Sea Watch Association", "stage": "Validate"},
+        {"id": "Precious Plastic", "label": "Precious Plastic", "partner": "Green World Foundation", "stage": "Build"},
+        {"id": "30x30 Thailand Coalition", "label": "30x30 Thailand Coalition", "partner": "Love Wildlife Foundation", "stage": "Pilot"},
+        {"id": "Mapping Connectivity of Coral Reefs", "label": "Mapping Connectivity of Coral Reefs", "partner": "ATMEC", "stage": "Validate"},
+        {"id": "Coral Conservation & Marine Science", "label": "Coral Conservation & Marine Science", "partner": "CORESea", "stage": "Validate"},
+        {"id": "Circular Economy Technology", "label": "Circular Economy Technology", "partner": "Micro Greentech", "stage": "Pilot"},
+        {"id": "Ocean Fund I-B", "label": "Ocean Fund I-B", "partner": "Circulate Capital", "stage": "Scale"},
+        {"id": "Ocean plastic recovery & finance", "label": "Ocean plastic recovery & finance", "partner": "Seven Clean Seas", "stage": "Build"},
+        {"id": "Seaweed-based biomaterial", "label": "Seaweed-based biomaterial", "partner": "Nano Onions", "stage": "Pilot"}
+      ],
+      "links": [
+        {"source": "_center", "target": "30x30 SEA Ocean Fund", "label": ""},
+        {"source": "_center", "target": "Net Free Seas", "label": ""},
+        {"source": "_center", "target": "Sea Guardians", "label": ""},
+        {"source": "_center", "target": "Precious Plastic", "label": ""},
+        {"source": "_center", "target": "30x30 Thailand Coalition", "label": ""},
+        {"source": "_center", "target": "Mapping Connectivity of Coral Reefs", "label": ""},
+        {"source": "_center", "target": "Coral Conservation & Marine Science", "label": ""},
+        {"source": "_center", "target": "Circular Economy Technology", "label": ""},
+        {"source": "_center", "target": "Ocean Fund I-B", "label": ""},
+        {"source": "_center", "target": "Ocean plastic recovery & finance", "label": ""},
+        {"source": "_center", "target": "Seaweed-based biomaterial", "label": ""}
+      ]
+    },
+    {
+      "id": "Inclusive Communities",
+      "titleNode": "_center",
+      "color": "#FF99B3",
+      "image": "inclusivecommu@1.png",
+      "badgeW": 229,
+      "badgeH": 133,
+      "nodes": [
+        {"id": "_center", "label": ""},
+        {"id": "Navigating Emotions", "label": "Navigating Emotions", "partner": "Bettr Lives", "stage": "Validate"},
+        {"id": "Digital Skills & Youth Agency", "label": "Digital Skills & Youth Agency", "partner": "Kita", "stage": "Pilot"},
+        {"id": "Undifferent", "label": "Undifferent", "partner": "Trampolene", "stage": "Validate"},
+        {"id": "Grassroots Protection Network", "label": "Grassroots Protection Network", "partner": "The Freedom Story", "stage": "Build"},
+        {"id": "Border Health", "label": "Border Health", "partner": "Mae Tao Clinic", "stage": "Build"},
+        {"id": "Gang i Gaden", "label": "Gang i Gaden", "partner": "Settlementet Vesterbro", "stage": "Build"},
+        {"id": "Refugee and Migrant Employment", "label": "Refugee and Migrant Employment", "partner": "Issa Solutions", "stage": "Pilot"},
+        {"id": "Community-led Emergency Preparedness", "label": "Community-led Emergency Preparedness", "partner": "Health & Share Foundation", "stage": "Build"}
+      ],
+      "links": [
+        {"source": "_center", "target": "Navigating Emotions", "label": ""},
+        {"source": "_center", "target": "Digital Skills & Youth Agency", "label": ""},
+        {"source": "_center", "target": "Undifferent", "label": ""},
+        {"source": "_center", "target": "Grassroots Protection Network", "label": ""},
+        {"source": "_center", "target": "Border Health", "label": ""},
+        {"source": "_center", "target": "Gang i Gaden", "label": ""},
+        {"source": "_center", "target": "Refugee and Migrant Employment", "label": ""},
+        {"source": "_center", "target": "Community-led Emergency Preparedness", "label": ""}
+      ]
+    }
+  ],
+  "crossLinks": [
+    {
+      "source": {"chart": "Regenerative Landscapes", "node": "Grow CF"},
+      "target": {"chart": "Regenerative Landscapes", "node": "Mangroves, Forests, Climate and Livelihoods Program"},
+      "label": "Win-Win Partnership",
+      "curveDist": 0.35
+    },
+    {
+      "source": {"chart": "Healthy Oceans", "node": "Mapping Connectivity of Coral Reefs"},
+      "target": {"chart": "Healthy Oceans", "node": "Coral Conservation & Marine Science"},
+      "label": "Collaborating on Coral Connectivity Project",
+      "curveDist": 0.35
+    },
+    {
+      "source": {"chart": "Healthy Oceans", "node": "Circular Economy Technology"},
+      "target": {"chart": "Healthy Oceans", "node": "Seaweed-based biomaterial"},
+      "label": "Incubated from ECCA-funded project – The Incubation Network",
+      "curveDist": 0.35
+    },
+    {
+      "source": {"chart": "Cultural Narratives", "node": "Arts and Mental Health"},
+      "target": {"chart": "Cultural Narratives", "node": "Arts-based Youth Development"},
+      "label": "Featured on WHO policy brief",
+      "curveDist": 0.35
+    },
+    {
+      "source": {"chart": "Regenerative Landscapes", "node": "Pai Regenerative Network"},
+      "target": {"chart": "Inclusive Communities", "node": "Navigating Emotions"},
+      "label": "Learning Journey",
+      "curveDist": 0.5
+    },
+    {
+      "source": {"chart": "Inclusive Communities", "node": "Navigating Emotions"},
+      "target": {"chart": "Inclusive Communities", "node": "Digital Skills & Youth Agency"},
+      "label": "Referral Network",
+      "curveDist": 0.3,
+      "group": "referral-network"
+    },
+    {
+      "source": {"chart": "Inclusive Communities", "node": "Digital Skills & Youth Agency"},
+      "target": {"chart": "Inclusive Communities", "node": "Undifferent"},
+      "label": "",
+      "curveDist": 0.3,
+      "group": "referral-network"
+    },
+    {
+      "source": {"chart": "Inclusive Communities", "node": "Navigating Emotions"},
+      "target": {"chart": "Inclusive Communities", "node": "Undifferent"},
+      "label": "",
+      "curveDist": -0.3,
+      "group": "referral-network"
+    },
+    {
+      "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
+      "target": {"chart": "Healthy Oceans", "node": "Precious Plastic"},
+      "label": "Partner Includes",
+      "curveDist": 0.25
+    },
+    {
+      "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
+      "target": {"chart": "Healthy Oceans", "node": "Sea Guardians"},
+      "label": "",
+      "curveDist": 0.3
+    },
+    {
+      "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
+      "target": {"chart": "Healthy Oceans", "node": "Net Free Seas"},
+      "label": "",
+      "curveDist": 0.35
+    },
+    {
+      "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
+      "target": {"chart": "Regenerative Landscapes", "node": "Grow CF"},
+      "label": "",
+      "curveDist": 0.4
+    },
+    {
+      "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
+      "target": {"chart": "Regenerative Landscapes", "node": "Mangroves, Forests, Climate and Livelihoods Program"},
+      "label": "",
+      "curveDist": 0.45
+    },
+    {
+      "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
+      "target": {"chart": "Regenerative Landscapes", "node": "FLF349 - Forest Restoration through Agroecology"},
+      "label": "",
+      "curveDist": 0.5
+    },
+    {
+      "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
+      "target": {"hub": "Nature Alliance (Thailand)"},
+      "label": "Invested for",
+      "curveDist": 0.2
+    },
+    {
+      "source": {"chart": "Regenerative Landscapes", "node": "Grow CF"},
+      "target": {"hub": "Nature Alliance (Thailand)"},
+      "label": "Invested for",
+      "curveDist": 0.25
+    },
+    {
+      "source": {"chart": "Regenerative Landscapes", "node": "FLF349 - Forest Restoration through Agroecology"},
+      "target": {"hub": "Nature Alliance (Thailand)"},
+      "label": "Invested for",
+      "curveDist": -0.2
+    },
+    {
+      "source": {"chart": "Cultural Narratives", "node": "Bangkok Climate Action Week"},
+      "target": {"hub": "Nature Alliance (Thailand)"},
+      "label": "Invested for",
+      "curveDist": -0.25
+    }
+  ]
+}

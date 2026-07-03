@@ -1,0 +1,14 @@
+{
+  "name": "dba4082b8541e5cd",
+  "main": "dba4082b8541e5cd@493.js",
+  "version": "493.0.0",
+  "homepage": "https://observablehq.com/d/dba4082b8541e5cd",
+  "author": {
+    "name": "woahwildwhat",
+    "url": "https://observablehq.com/@woahwildwhat"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}

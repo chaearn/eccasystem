@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Local tooling / editor state
+.claude/
+
+# Dependencies (none committed; app runs from static files)
+node_modules/

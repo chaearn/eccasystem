@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>ECCAsystem</title>
+<link rel="stylesheet" type="text/css" href="./inspector.css">
+
+<link rel="preconnect" href="https://use.typekit.net">
+<link rel="preconnect" href="https://p.typekit.net" crossorigin>
+
+<link rel="preload" as="image" href="./files/a4dad551a2adddb442a460136730dee1d78031e8592b08f7073a4920b87c848cf9d12dfc0db7efdd8efd13fd4abe73d3520fe7187293b6cdc0a6baff8b0fd368.png">
+<link rel="preload" as="image" href="./files/7191241aa5c27144c921c85b7423715d8bdf1447965d62d20588d2d3549f43de47f02c9568c0f6ae12bc092c1336f886d9a6f4ebb4d17fde455110f83b44bd6e.png">
+<link rel="preload" as="image" href="./files/669813c32961b8dbe05210c732c0afb325e4912d5a91739a6cb315b3e9be053fd1c41313260eafd3c912439827b984aac5350da4f0338948cbff90279944c513.png">
+<link rel="preload" as="image" href="./files/31b81a3dccddc4fa8502d7832655315ae923db3905eea06e716febc50d8903292422e2013bab43cdf47ec16e914b0ad800eacf56ded5dee1297d933bb6583551.png">
+
+<link rel="preload" as="image" href="./files/686dbab0cb97e7a055a2a16a2a66e009780de57f1386ab7d9ee6abdd75aee055a55a9a30d728d358c82ebbcfa128d6a74762373904e070ca553b4742070765be.svg">
+<link rel="preload" as="image" href="./files/3433e3263c31b11c3a5e1e66f95e132da60332c24c695415390f6f0e7e4145f03d434d63d34be0a66dcc2079bbbfe2d0fa5174a1ec72afcce8cabbfa68c34fb3.svg">
+<link rel="preload" as="image" href="./files/c844eb6f66527f62cc17b06b002b384289b1ca8666cf58e3654beb7901789db14bd2110e93f45066cc4b87f317cec73b03e4f5ecfa618b77bc7d887a61f46ed2.svg">
+<link rel="preload" as="image" href="./files/eac0c2831435ae2837b28ad11bc75ca79f07e3a6279e73b3f5b96471030ad325bf462b3c147a095bcb2e5908c6a35ef3e8cd66e83129466d88a5e6cf135db98d.svg">
+
+<link rel="preload" as="font" type="font/ttf" crossorigin href="./files/f4a0bc9bc707cb1e11d0eb97ab62a66a14f2f2aa320e356c66186ebeba1b6ee6448b341c3de9dceed953aec3c4e0db819ad8c5b8f532fff71811f5ca51b2f7d6.ttf">
+
+<style>
+  html, body { margin: 0; padding: 0; overflow: hidden; background: #F2F1ED; }
+  /* Root font-size drives every rem-based measurement in the info cards
+     (see cardHTML in ECCAsystem.js) — smaller here means the whole card
+     (padding, text, gaps) scales down together on a small screen instead
+     of staying at desktop size and wrapping into a cramped column. */
+  html { font-size: 16px; }
+  @media (max-width: 480px) {
+    html { font-size: 10px; }
+  }
+</style>
+
+<body>
+<script type="module">
+
+import define from "./index.js";
+import {Runtime, Library, Inspector} from "./runtime.js";
+
+const runtime = new Runtime();
+
+// Only the map diagram (the 2nd cell the notebook defines) should render
+// visibly — the title, the raw font-loader debug output, and the demo
+// paragraph shouldn't show up. Every cell still needs a real Inspector
+// though, or the runtime treats it as unreachable and never computes it
+// at all — which would silently stop the Contee font from loading. So
+// non-diagram cells get a real Inspector too, just pointed at a
+// display:none container instead of the visible page.
+const hiddenRoot = document.createElement("div");
+hiddenRoot.style.display = "none";
+document.body.appendChild(hiddenRoot);
+
+const DIAGRAM_CELL_INDEX = 1; // 0 = title, 1 = diagram, 2+ = link/style/font cells
+let cellIndex = 0;
+function observer() {
+  const container = cellIndex++ === DIAGRAM_CELL_INDEX ? document.body : hiddenRoot;
+  return Inspector.into(container)();
+}
+
+const main = runtime.module(define, observer);
+
+</script>
