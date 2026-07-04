@@ -179,19 +179,19 @@
     {
       "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
       "target": {"chart": "Healthy Oceans", "node": "Precious Plastic"},
-      "label": "Partner Includes",
+      "label": "Partner with",
       "curveDist": 0.25
     },
     {
       "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
       "target": {"chart": "Healthy Oceans", "node": "Sea Guardians"},
-      "label": "",
+      "label": "Partner with",
       "curveDist": 0.3
     },
     {
       "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
       "target": {"chart": "Healthy Oceans", "node": "Net Free Seas"},
-      "label": "",
+      "label": "Partner with",
       "curveDist": 0.35
     },
     {
@@ -203,13 +203,13 @@
     {
       "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
       "target": {"chart": "Regenerative Landscapes", "node": "Mangroves, Forests, Climate and Livelihoods Program"},
-      "label": "",
+      "label": "Partner with",
       "curveDist": 0.45
     },
     {
       "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
       "target": {"chart": "Regenerative Landscapes", "node": "FLF349 - Forest Restoration through Agroecology"},
-      "label": "",
+      "label": "Partner with",
       "curveDist": 0.5
     },
     {
