@@ -57,7 +57,7 @@ async function _2(FileAttachment,d3)
     // the foreignObject width, card positioning/clamping and leader-line
     // geometry — all computed once up front — so like the two maxContent
     // settings it can't be applied live and needs a reload.
-    cardWidth: 148,
+    cardWidth: 160,
     // Info-card text sizes, in rem (tied to the root font-size set in
     // index.html, same as the card padding — so text and padding scale
     // together on mobile instead of the text shrinking with the card width).
@@ -718,7 +718,7 @@ async function _2(FileAttachment,d3)
       .attr("height", d => nodeSize(d))
       .attr("preserveAspectRatio", "xMidYMid meet")
       .attr("display", d => hasCard(d) ? null : "none")
-      .style("cursor", "grab");
+      .style("cursor", "pointer");
 
     // Wrapped in its own group (like the cross-link/local-link labels)
     // rather than positioned by attrs directly on <text> — a <tspan> with
