@@ -165,14 +165,14 @@
     {
       "source": {"chart": "Inclusive Communities", "node": "Digital Skills & Youth Agency"},
       "target": {"chart": "Inclusive Communities", "node": "Undifferent"},
-      "label": "",
+      "label": "Referral Network",
       "curveDist": 0.3,
       "group": "referral-network"
     },
     {
       "source": {"chart": "Inclusive Communities", "node": "Navigating Emotions"},
       "target": {"chart": "Inclusive Communities", "node": "Undifferent"},
-      "label": "",
+      "label": "Referral Network",
       "curveDist": -0.3,
       "group": "referral-network"
     },

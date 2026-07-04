@@ -57,7 +57,7 @@ async function _2(FileAttachment,d3)
     // the foreignObject width, card positioning/clamping and leader-line
     // geometry — all computed once up front — so like the two maxContent
     // settings it can't be applied live and needs a reload.
-    cardWidth: 160,
+    cardWidth: 165,
     // Info-card text sizes, in rem (tied to the root font-size set in
     // index.html, same as the card padding — so text and padding scale
     // together on mobile instead of the text shrinking with the card width).
@@ -490,12 +490,14 @@ async function _2(FileAttachment,d3)
   }
 
   function cardHTML(d, chart) {
-    // Everything here is rem (except min-width — card.w is already a
-    // JS-computed responsive value, see isSmallScreen() above). Text sizes,
-    // padding, gaps and radius are all tied to the root font-size set in
-    // index.html (16px desktop, 10px mobile), so on a small screen the whole
-    // card — text and spacing together — steps down by the same factor and
-    // keeps its proportions. Text sizes come from the settings panel.
+    // Everything here is rem (except max-width — card.w is already a
+    // JS-computed responsive value, see isSmallScreen() above). The card is
+    // width:fit-content so it hugs its text (capped at card.w), with the real
+    // width measured back into the foreignObject in measureCardHeights. Text
+    // sizes, padding, gaps and radius are all tied to the root font-size set
+    // in index.html (16px desktop, 10px mobile), so on a small screen the
+    // whole card — text and spacing together — steps down by the same factor
+    // and keeps its proportions. Text sizes come from the settings panel.
     const t = {
       partner: settings.cardPartnerRem,
       label:   settings.cardLabelRem,
@@ -503,7 +505,8 @@ async function _2(FileAttachment,d3)
     };
     return `
       <div class="poppins" style="
-        min-width:${card.w}px;
+        width:fit-content;
+        // max-width:${card.w}px;
         min-height:auto;
         box-sizing:border-box;
         background:rgba(247,246,239,0.96);
@@ -529,7 +532,8 @@ async function _2(FileAttachment,d3)
           line-height:1.15;
           color:#111;
           white-space:pre-line;
-          max-width:18ch;
+          min-width:${card.w}px;
+          max-width:25ch;
         ">${d.label || d.id}</div>
 
         <div style="
@@ -803,8 +807,12 @@ async function _2(FileAttachment,d3)
     // clamps against its own real size instead of the generic estimate.
     function clampedCardPos(d, hOverride) {
       const h = hOverride ?? card.h;
+      // Cards are auto-width (fit-content, capped at card.w) and get their
+      // real width measured into d.__cardW below; fall back to card.w before
+      // that first measurement.
+      const w = d.__cardW ?? card.w;
       return {
-        x: Math.max(-x, Math.min(d.x + card.offsetX, layout.width - x - card.w)),
+        x: Math.max(-x, Math.min(d.x + card.offsetX, layout.width - x - w)),
         y: Math.max(-y, Math.min(d.y + card.offsetY, layout.height - y - h))
       };
     }
@@ -830,12 +838,16 @@ async function _2(FileAttachment,d3)
     // both a slow font fetch and any other late reflow.
     function measureCardHeights() {
       infoCards.each(function(d) {
-        const contentEl = this.firstElementChild;
-        const measured = contentEl ? contentEl.offsetHeight : 0;
-        if (measured > 0) {
-          const h = measured + 4;
+        const wrapperEl = this.firstElementChild;      // fills the foreignObject
+        const cardEl = wrapperEl && wrapperEl.firstElementChild; // the fit-content card
+        const measuredH = wrapperEl ? wrapperEl.offsetHeight : 0;
+        const measuredW = cardEl ? cardEl.offsetWidth : 0;
+        if (measuredH > 0) {
+          const h = measuredH + 4;
+          const w = measuredW > 0 ? measuredW : card.w;
+          d.__cardW = w;
           const g = d3.select(this);
-          g.attr("height", h);
+          g.attr("height", h).attr("width", w);
           const pos = clampedCardPos(d, h);
           g.attr("x", pos.x).attr("y", pos.y);
         }
@@ -937,7 +949,7 @@ async function _2(FileAttachment,d3)
       cardLeaders
         .attr("x1", d => d.x)
         .attr("y1", d => d.y)
-        .attr("x2", d => clampedCardPos(d).x + card.w)
+        .attr("x2", d => clampedCardPos(d).x + (d.__cardW ?? card.w))
         .attr("y2", d => clampedCardPos(d).y + card.h / 2);
     }
 
