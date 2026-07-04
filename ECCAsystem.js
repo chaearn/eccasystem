@@ -51,24 +51,26 @@ async function _2(FileAttachment,d3)
     // any screen instead of feeling arbitrary on a much bigger or smaller
     // one. Renamed from maxContentW/H (which were px) so any old stored
     // value from before this change is just ignored, not misread as a %.
-    maxContentWPct: 65,
-    maxContentHPct: 55,
+    maxContentWPct: 90,
+    maxContentHPct: 90,
     // Base info-card width in px (before the mobile cardScale below). Drives
     // the foreignObject width, card positioning/clamping and leader-line
     // geometry — all computed once up front — so like the two maxContent
     // settings it can't be applied live and needs a reload.
-    cardWidth: 172,
-    // Info-card text sizes, in cqw (% of the card's own width — see cardHTML).
-    // These are the desktop values; mobile gets a uniform bump (see cardHTML).
+    cardWidth: 148,
+    // Info-card text sizes, in rem (tied to the root font-size set in
+    // index.html, same as the card padding — so text and padding scale
+    // together on mobile instead of the text shrinking with the card width).
     // Changing them re-wraps the labels and changes card height, which is
     // measured once at build, so they're reload-required too.
-    cardPartnerCqw: 6,
-    cardLabelCqw: 9,
-    cardStageCqw: 6,
-    // Info-card inner padding in rem (vertical / horizontal — see cardHTML).
-    // Changes the content-box size and card height (measured once at build),
-    // so reload-required like the other card-geometry settings.
-    cardPadV: 0.75,
+    cardPartnerRem: 0.625,
+    cardLabelRem: 0.75,
+    cardStageRem: 0.625,
+    // Info-card inner padding in rem (top / bottom / horizontal — see
+    // cardHTML). Changes the content-box size and card height (measured once
+    // at build), so reload-required like the other card-geometry settings.
+    cardPadTop: 0.75,
+    cardPadBottom: 0.5,
     cardPadH: 0.625
   }, storedSettings);
   function saveSettings() {
@@ -488,33 +490,25 @@ async function _2(FileAttachment,d3)
   }
 
   function cardHTML(d, chart) {
-    // Two responsive units here, no px except min-width (card.w is already a
-    // JS-computed responsive value, see isSmallScreen() above):
-    //   - Text sizes are in cqw, relative to the card itself (the outer div
-    //     sets container-type:inline-size). So the type scales to the card's
-    //     width — narrow the card via cardScale and the text shrinks with it,
-    //     no separate breakpoint needed. 100cqw = the card's content-box width.
-    //   - Padding/gaps/radius stay in rem, tied to the root font-size set in
-    //     index.html, so the card's spacing still steps down at the mobile
-    //     breakpoint alongside the width.
-    // Text sizes come from the settings panel (cqw). They're the desktop
-    // values; mobile gets a uniform bump because cardScale already narrows the
-    // card there, which (via cqw) would otherwise shrink the text too far.
-    const mobileTextBump = isSmallScreen() ? 7 / 6 : 1;
+    // Everything here is rem (except min-width — card.w is already a
+    // JS-computed responsive value, see isSmallScreen() above). Text sizes,
+    // padding, gaps and radius are all tied to the root font-size set in
+    // index.html (16px desktop, 10px mobile), so on a small screen the whole
+    // card — text and spacing together — steps down by the same factor and
+    // keeps its proportions. Text sizes come from the settings panel.
     const t = {
-      partner: settings.cardPartnerCqw * mobileTextBump,
-      label:   settings.cardLabelCqw   * mobileTextBump,
-      stage:   settings.cardStageCqw   * mobileTextBump
+      partner: settings.cardPartnerRem,
+      label:   settings.cardLabelRem,
+      stage:   settings.cardStageRem
     };
     return `
       <div class="poppins" style="
         min-width:${card.w}px;
         min-height:auto;
         box-sizing:border-box;
-        container-type: inline-size;
         background:rgba(247,246,239,0.96);
         border-radius:0.75rem;
-        padding:${settings.cardPadV}rem ${settings.cardPadH}rem;
+        padding:${settings.cardPadTop}rem ${settings.cardPadH}rem ${settings.cardPadBottom}rem;
         color:#111;
         display:flex;
         flex-direction:column;
@@ -522,7 +516,7 @@ async function _2(FileAttachment,d3)
         box-shadow:0 1px 0 rgba(0,0,0,0.02);
       ">
         <div class="poppins" style="
-          font-size:${t.partner}cqw;
+          font-size:${t.partner}rem;
           font-weight:500;
           line-height:1;
           color:${chart.color};
@@ -530,7 +524,7 @@ async function _2(FileAttachment,d3)
         ">${d.partner || ""}</div>
 
         <div class="poppins" style="
-          font-size:${t.label}cqw;
+          font-size:${t.label}rem;
           font-weight:700;
           line-height:1.15;
           color:#111;
@@ -552,7 +546,7 @@ async function _2(FileAttachment,d3)
                   color:${chart.color};
                   border-radius:0.1875rem;
                   padding:0.25rem 0.5rem;
-                  font-size:${t.stage}cqw;
+                  font-size:${t.stage}rem;
                   font-weight:600;
                   line-height:1;
                 ">${d.stage}</div>`
@@ -1617,10 +1611,11 @@ async function _2(FileAttachment,d3)
   }
 
   addDeferredSettingSlider("Card width (px)", "cardWidth", 120, 280, 4);
-  addDeferredSettingSlider("Card title font (cqw)", "cardLabelCqw", 4, 18, 0.5);
-  addDeferredSettingSlider("Card partner font (cqw)", "cardPartnerCqw", 3, 14, 0.5);
-  addDeferredSettingSlider("Card stage font (cqw)", "cardStageCqw", 3, 14, 0.5);
-  addDeferredSettingSlider("Card padding V (rem)", "cardPadV", 0, 1.5, 0.125);
+  addDeferredSettingSlider("Card title font (rem)", "cardLabelRem", 0.375, 1.5, 0.0625);
+  addDeferredSettingSlider("Card partner font (rem)", "cardPartnerRem", 0.375, 1.5, 0.0625);
+  addDeferredSettingSlider("Card stage font (rem)", "cardStageRem", 0.375, 1.5, 0.0625);
+  addDeferredSettingSlider("Card padding top (rem)", "cardPadTop", 0, 1.5, 0.125);
+  addDeferredSettingSlider("Card padding bottom (rem)", "cardPadBottom", 0, 1.5, 0.125);
   addDeferredSettingSlider("Card padding H (rem)", "cardPadH", 0, 1.5, 0.125);
   addDeferredSettingSlider("Max panel-cluster width (% of screen)", "maxContentWPct", 20, 100, 1);
   addDeferredSettingSlider("Max panel-cluster height (% of screen)", "maxContentHPct", 20, 100, 1);
