@@ -536,7 +536,7 @@ async function _2(FileAttachment,d3)
           width:100%;
           display: flex;
           border-top: 1px solid ${chart.color};
-          padding-top: 0.25rem;
+          padding-top: 0.5rem;
         ">
           ${
             d.stage
