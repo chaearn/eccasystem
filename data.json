@@ -197,7 +197,7 @@
     {
       "source": {"chart": "Healthy Oceans", "node": "30x30 Thailand Coalition"},
       "target": {"chart": "Regenerative Landscapes", "node": "Grow CF"},
-      "label": "",
+      "label": "Partner with",
       "curveDist": 0.4
     },
     {
