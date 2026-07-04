@@ -64,7 +64,12 @@ async function _2(FileAttachment,d3)
     // measured once at build, so they're reload-required too.
     cardPartnerCqw: 6,
     cardLabelCqw: 9,
-    cardStageCqw: 6
+    cardStageCqw: 6,
+    // Info-card inner padding in rem (vertical / horizontal — see cardHTML).
+    // Changes the content-box size and card height (measured once at build),
+    // so reload-required like the other card-geometry settings.
+    cardPadV: 0.75,
+    cardPadH: 0.625
   }, storedSettings);
   function saveSettings() {
     try {
@@ -509,7 +514,7 @@ async function _2(FileAttachment,d3)
         container-type: inline-size;
         background:rgba(247,246,239,0.96);
         border-radius:0.75rem;
-        padding:0.875rem 0.875rem 0.75rem 0.875rem;
+        padding:${settings.cardPadV}rem ${settings.cardPadH}rem;
         color:#111;
         display:flex;
         flex-direction:column;
@@ -1615,6 +1620,8 @@ async function _2(FileAttachment,d3)
   addDeferredSettingSlider("Card title font (cqw)", "cardLabelCqw", 4, 18, 0.5);
   addDeferredSettingSlider("Card partner font (cqw)", "cardPartnerCqw", 3, 14, 0.5);
   addDeferredSettingSlider("Card stage font (cqw)", "cardStageCqw", 3, 14, 0.5);
+  addDeferredSettingSlider("Card padding V (rem)", "cardPadV", 0, 1.5, 0.125);
+  addDeferredSettingSlider("Card padding H (rem)", "cardPadH", 0, 1.5, 0.125);
   addDeferredSettingSlider("Max panel-cluster width (% of screen)", "maxContentWPct", 20, 100, 1);
   addDeferredSettingSlider("Max panel-cluster height (% of screen)", "maxContentHPct", 20, 100, 1);
 
