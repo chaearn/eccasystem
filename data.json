@@ -16,7 +16,7 @@
         {"id": "FLF349 - Forest Restoration through Agroecology", "label": "FLF349 - Forest Restoration through Agroecology", "partner": "World Wide Fund for Nature", "stage": "Build"},
         {"id": "Pai Regenerative Network", "label": "Pai Regenerative Network", "partner": "Pai Seedlings", "stage": "Validate"},
         {"id": "Mangroves, Forests, Climate and Livelihoods Program", "label": "Mangroves, Forests, Climate and Livelihoods Program", "partner": "Landesa", "stage": "Build"},
-        {"id": "Grow CF", "label": "Grow CF", "partner": "RECOFTC", "stage": "Build"}
+        {"id": "Grow CF", "label": "Grow CF", "partner": "RECOFTC", "stage": "Build", "url": "https://example.com/grow-cf"}
       ],
       "links": [
         {"source": "_center", "target": "Sangsuree Power", "label": ""},

@@ -503,16 +503,27 @@ async function _2(FileAttachment,d3)
       label:   settings.cardLabelRem,
       stage:   settings.cardStageRem
     };
+    // A node with a `url` in data.json turns its card into a link to that
+    // project page (opens in a new tab, with a "View project" affordance).
+    // Nodes without a url render an inert card — so links can be added later,
+    // one node at a time, as the project pages go live. The card's clickability
+    // is gated by pointer-events, toggled on only for the focused card in
+    // setEmphasis so hidden cards never intercept clicks.
+    const clickable = !!d.url;
+    const href = clickable ? String(d.url).replace(/"/g, "&quot;") : "";
+    const tag = clickable ? "a" : "div";
+    const linkAttrs = clickable ? `href="${href}" target="_blank" rel="noopener noreferrer"` : "";
     return `
-      <div class="poppins" style="
+      <${tag} class="poppins" ${linkAttrs} style="
         width:fit-content;
-        // max-width:${card.w}px;
         min-height:auto;
         box-sizing:border-box;
         background:rgba(247,246,239,0.96);
         border-radius:0.75rem;
         padding:${settings.cardPadTop}rem ${settings.cardPadH}rem ${settings.cardPadBottom}rem;
         color:#111;
+        text-decoration:none;
+        ${clickable ? "cursor:pointer;" : ""}
         display:flex;
         flex-direction:column;
         gap:0.25rem;
@@ -539,6 +550,7 @@ async function _2(FileAttachment,d3)
         <div style="
           width:100%;
           display: flex;
+          align-items: center;
           border-top: 1px solid ${chart.color};
           padding-top: 0.5rem;
         ">
@@ -556,9 +568,21 @@ async function _2(FileAttachment,d3)
                 ">${d.stage}</div>`
               : ``
           }
+          ${
+            clickable
+              ? `<div class="poppins" style="
+                  margin-left:auto;
+                  font-size:${t.stage}rem;
+                  font-weight:600;
+                  line-height:1;
+                  color:${chart.color};
+                  white-space:nowrap;
+                ">View project ↗</div>`
+              : ``
+          }
         </div>
 
-      </div>
+      </${tag}>
     `;
   }
 
@@ -619,7 +643,7 @@ async function _2(FileAttachment,d3)
     const titleLayer = panel.append("g").attr("pointer-events", "none");
     const titleBadge = titleLayer.append("g")
       .style("pointer-events", "auto")
-      .style("cursor", "grab");
+      .style("cursor", "pointer");
 
     titleBadge.append("image")
       .attr("href", chart.image)
@@ -642,9 +666,18 @@ async function _2(FileAttachment,d3)
           render();
         })
         .on("end", () => {
-          titleBadge.style("cursor", "grab");
+          titleBadge.style("cursor", "pointer");
         })
     );
+
+    // Click the badge to zoom/solo this theme's quadrant (drag still
+    // repositions it — d3-drag suppresses the click after a real drag).
+    // Clicking the already-soloed theme's badge returns to the overview.
+    titleBadge.on("click", (event) => {
+      event.stopPropagation();
+      if (soloedIndex === index) exitSolo();
+      else soloPanel(index);
+    });
 
     const title = titleLayer.append("text")
       .attr("font-size", 15)
@@ -1071,6 +1104,9 @@ async function _2(FileAttachment,d3)
 
       infoCards.interrupt().transition().duration(180)
         .style("opacity", d => keyOf(d) === focusKey ? 1 : 0);
+      // Only the focused card, and only if it links somewhere, accepts clicks —
+      // otherwise invisible cards would intercept clicks over their footprint.
+      infoCards.style("pointer-events", d => (keyOf(d) === focusKey && d.url) ? "auto" : "none");
       cardLeaders.interrupt().transition().duration(180)
         .attr("stroke-opacity", d => keyOf(d) === focusKey ? 0.5 : 0);
     }
@@ -1088,11 +1124,14 @@ async function _2(FileAttachment,d3)
           .attr("font-weight", 500);
       });
       infoCards.interrupt().transition().duration(160).style("opacity", 0);
+      infoCards.style("pointer-events", "none");
       cardLeaders.interrupt().transition().duration(160).attr("stroke-opacity", 0);
     }
 
     return {
       chart,
+      index,
+      root: panel,
       nodes,
       node,
       labels,
@@ -1514,15 +1553,71 @@ async function _2(FileAttachment,d3)
   // content cluster within the full-bleed canvas, with a small 0.92 scale-down for
   // breathing room from the edges either way.
   const initialScale = 0.92;
-  svg.call(
-    zoom.transform,
-    d3.zoomIdentity
-      .translate(
-        (viewportW - contentW * initialScale) / 2,
-        (viewportH - contentH * initialScale) / 2
-      )
-      .scale(initialScale)
-  );
+  const overviewTransform = d3.zoomIdentity
+    .translate(
+      (viewportW - contentW * initialScale) / 2,
+      (viewportH - contentH * initialScale) / 2
+    )
+    .scale(initialScale);
+  svg.call(zoom.transform, overviewTransform);
+
+  // --- Title-badge zoom/solo -------------------------------------------------
+  // Clicking a theme's title badge zooms that quadrant to fill the screen and
+  // fades the others, so it reads as its own map; a floating "Overview" button
+  // (or Esc, or the soloed badge again) returns. Reuses the existing zoom —
+  // the richer per-theme detail maps (in Figma) are a later phase.
+  let soloedIndex = null;
+
+  function panelFitTransform(index) {
+    const {x: px, y: py} = panelPosition(index);
+    const pad = 0.9;
+    const k = Math.max(0.6, Math.min(3,
+      Math.min(viewportW / layout.panelW, viewportH / layout.panelH) * pad));
+    const cx = px + layout.panelW / 2;
+    const cy = py + layout.panelH / 2;
+    return d3.zoomIdentity
+      .translate(viewportW / 2 - k * cx, viewportH / 2 - k * cy)
+      .scale(k);
+  }
+
+  function soloPanel(index) {
+    soloedIndex = index;
+    svg.transition().duration(650).call(zoom.transform, panelFitTransform(index));
+    panels.forEach((p, i) => {
+      p.root.interrupt().transition().duration(400)
+        .style("opacity", i === index ? 1 : 0.12);
+    });
+    overviewButton.style("display", "block");
+  }
+
+  function exitSolo() {
+    if (soloedIndex === null) return;
+    soloedIndex = null;
+    svg.transition().duration(650).call(zoom.transform, overviewTransform);
+    panels.forEach(p => p.root.interrupt().transition().duration(400).style("opacity", 1));
+    overviewButton.style("display", "none");
+  }
+
+  const overviewButton = d3.create("button")
+    .text("← Overview")
+    .style("position", "fixed")
+    .style("left", "12px")
+    .style("top", "12px")
+    .style("z-index", "10")
+    .style("display", "none")
+    .style("padding", "7px 12px")
+    .style("border-radius", "8px")
+    .style("border", "1px solid #d8d5cd")
+    .style("background", "#fff")
+    .style("box-shadow", "0 2px 8px rgba(0,0,0,0.12)")
+    .style("font-family", "system-ui, sans-serif")
+    .style("font-size", "12px")
+    .style("cursor", "pointer");
+  overviewButton.on("click", exitSolo);
+
+  d3.select(window).on("keydown.solo", (event) => {
+    if (event.key === "Escape") exitSolo();
+  });
 
   // Small dev-facing settings panel — bottom right, collapsed by default —
   // for tweaking the contour/label tuning knobs live without editing code.
@@ -1646,6 +1741,7 @@ async function _2(FileAttachment,d3)
   const wrapper = d3.create("div").style("position", "relative");
   wrapper.node().appendChild(svg.node());
   wrapper.node().appendChild(settingsPanel.node());
+  wrapper.node().appendChild(overviewButton.node());
 
   return wrapper.node();
 }
