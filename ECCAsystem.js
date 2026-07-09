@@ -71,7 +71,17 @@ async function _2(FileAttachment,d3)
     // at build), so reload-required like the other card-geometry settings.
     cardPadTop: 0.75,
     cardPadBottom: 0.5,
-    cardPadH: 0.625
+    cardPadH: 0.625,
+    // Sub-zone artwork tuning for Regenerative Landscapes (Entry Point B).
+    // Connector attach points (azBx/azBy, per zone index 0-4) and the Node Area
+    // cluster centre (naBx/naBy) — all normalized 0-1 to the artwork image.
+    // Live-adjustable in the settings panel.
+    azBx0: 0.18, azBy0: 0.44,
+    azBx1: 0.44, azBy1: 0.37,
+    azBx2: 0.635, azBy2: 0.39,
+    azBx3: 0.705, azBy3: 0.565,
+    azBx4: 0.695, azBy4: 0.795,
+    naBx: 0.41, naBy: 0.69
   }, storedSettings);
   function saveSettings() {
     try {
@@ -590,7 +600,96 @@ async function _2(FileAttachment,d3)
     `;
   }
 
-  
+  // Sub-zones per theme (names + descriptions from the ECCA copy). Rendered as
+  // placeholder organic blobs, clustered in each panel, sitting at low opacity
+  // and lighting up when the theme is soloed. Real blob shapes + which node
+  // belongs to which zone come later.
+  const SUBZONES = {
+    "Healthy Oceans": [
+      {name: "Protection & Restoration", desc: "Protecting and restoring marine ecosystems — coral reefs, mangroves, biodiversity and marine protected areas."},
+      {name: "Livelihoods & Sustainable Use", desc: "Supporting responsible fishing, regenerative tourism and community livelihoods that depend on healthy oceans."},
+      {name: "Pollution & Plastics", desc: "Tackling ocean pollution, plastic leakage, ghost gear and building circular economy solutions."},
+      {name: "Adaptation & Resilience", desc: "Helping coastal and marine ecosystems adapt to climate change — building long-term resilience of habitats, species and communities."},
+      {name: "Governance & Policy", desc: "Marine governance, policy advocacy and national ocean frameworks — shifting how oceans are managed at the systems level."}
+    ],
+    "Regenerative Landscapes": [
+      {name: "Community Forestry & Stewardship", desc: "Communities leading forest management, stewardship and governance — protecting and sustainably using the landscapes they depend on."},
+      {name: "Land Rights & Tenure", desc: "Legal frameworks and governance structures that determine who has recognized rights to land — and under what conditions stewardship is viable."},
+      {name: "Landscape Restoration", desc: "Active restoration of forests and degraded land — including nature-based solutions that rebuild ecosystem health."},
+      {name: "Regenerative Agriculture", desc: "Farming practices that restore soil health, support biodiversity and create sustainable food systems for farming communities."},
+      {name: "Just Transition", desc: "Supporting communities to transition to clean energy and sustainable livelihoods — ensuring the shift away from extractive practices is equitable."}
+    ],
+    "Inclusive Communities": [
+      {name: "Health & Wellbeing", desc: "Physical and mental health access, social emotional learning and trauma-informed support for people facing the highest barriers."},
+      {name: "Protection & Safety", desc: "Strengthening protection systems, advocating for rights and building the safeguards that keep vulnerable people — migrants, children, those at risk — safe long-term."},
+      {name: "Livelihoods & Economic Mobility", desc: "Skills training, employment pathways and social support that open doors to economic and social mobility for people who face the highest barriers."},
+      {name: "Youth & Agency", desc: "Building youth leadership, agency and peer support — giving young people the tools and confidence to shape their own futures."}
+    ],
+    "Cultural Narratives": [
+      {name: "Arts for Change", desc: "Using arts deliberately as a tool to drive measurable change in social and environmental outcomes — arts as intervention, not just expression."},
+      {name: "Narratives & Storytelling", desc: "Arts and media that shift how issues are framed, felt and understood — changing the stories that shape what people believe is possible."},
+      {name: "Creative Ecosystems", desc: "Investing in the next generation of artists and practitioners — building the talent, infrastructure and institutional capacity that sustains cultural work long-term."},
+      {name: "Movement Building", desc: "Using cultural moments and platforms to mobilise people around a shared cause — building the collective energy needed for systems change."}
+    ]
+  };
+
+  // Which node connects to which sub-zone(s), per theme. A node draws a
+  // connector to each of its zones in the detail map. Filled in per theme as
+  // the mapping is provided (others fall back to no connectors for now).
+  const CONNECTIONS = {
+    "Regenerative Landscapes": {
+      "Mangroves, Forests, Climate and Livelihoods Program": ["Community Forestry & Stewardship", "Land Rights & Tenure"],
+      "Grow CF": ["Community Forestry & Stewardship", "Land Rights & Tenure", "Landscape Restoration"],
+      "FLF349 - Forest Restoration through Agroecology": ["Landscape Restoration", "Regenerative Agriculture"],
+      "Pai Regenerative Network": ["Landscape Restoration", "Regenerative Agriculture"],
+      "Sangsuree Power": ["Just Transition"]
+    }
+  };
+
+  // Designed sub-zone artwork per theme: one combined image + per-zone coords
+  // normalized 0–1 to the image. Themes listed here use the artwork (with
+  // invisible hit targets); others fall back to drawn placeholder blobs.
+  // Coords are eyeballed — tune cx/cy (hit-target centre), r (hit radius),
+  // ax/ay (connector attach point, on the blob's lower edge).
+  const SUBZONE_ART = {
+    "Regenerative Landscapes": {
+      src: "./characters/subzone-b.png",   // rasterized from the (huge) source SVG
+      aspect: 1.25,                         // image width / height
+      zones: {
+        "Community Forestry & Stewardship": { cx: 0.18, cy: 0.30, r: 0.15, ax: 0.18, ay: 0.44 },
+        "Land Rights & Tenure":             { cx: 0.44, cy: 0.22, r: 0.15, ax: 0.44, ay: 0.37 },
+        "Landscape Restoration":            { cx: 0.71, cy: 0.30, r: 0.13, ax: 0.635, ay: 0.39 },
+        "Regenerative Agriculture":         { cx: 0.82, cy: 0.55, r: 0.12, ax: 0.705, ay: 0.565 },
+        "Just Transition":                  { cx: 0.79, cy: 0.80, r: 0.12, ax: 0.695, ay: 0.795 }
+      }
+    }
+  };
+
+  const SUBZONE_DIM = 0.16; // resting opacity of the sub-zone layer (full = 1 when soloed)
+
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // Smooth closed organic blob path around (cx,cy) with radius r; `seed` gives
+  // each blob a stable, slightly different wobble.
+  function blobPath(cx, cy, r, seed) {
+    const n = 8;
+    let s = seed % 233280;
+    const rand = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    const pts = [];
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      const rr = r * (0.82 + rand() * 0.34);
+      pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]);
+    }
+    let d = `M ${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)} `;
+    for (let i = 0; i < n; i++) {
+      const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+      const c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+      const c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+      d += `C ${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)} `;
+    }
+    return d + "Z";
+  }
 
   function makePanel(chart, index) {
     const {x, y} = panelPosition(index);
@@ -694,6 +793,232 @@ async function _2(FileAttachment,d3)
     const densityLayer = inner.append("g")
       .style("mix-blend-mode", "multiply")
       .style("pointer-events", "none");
+
+    // Placeholder sub-zone "detail map" for this theme: an organic blob cluster
+    // positioned OUTSIDE the master, diagonally outward from this panel, in the
+    // shared detailLayer (global coords). It's off-screen in the master view;
+    // clicking the theme's badge pans + zooms out to it and lights it up (see
+    // detailFitTransform / soloPanel). Faint until then.
+    let detailCenter = null;
+    let detailExtent = 0;
+    let detailControls = null; // live tuning of attach points + node area (art)
+    const detailGroup = detailLayer.append("g")
+      .attr("class", "detail-map")
+      .style("opacity", SUBZONE_DIM);
+    (function renderDetail() {
+      const zones = SUBZONES[chart.id] || [];
+      const realNodes = nodes.filter(hasCard);
+      if (!zones.length) return;
+      const outX = col === 0 ? -1 : 1;
+      const outY = row === 0 ? -1 : 1;
+      const base = Math.min(layout.panelW, layout.panelH);
+      const gcx = x + layout.panelW / 2 + outX * layout.panelW * 1.18;
+      const gcy = y + layout.panelH / 2 + outY * layout.panelH * 1.18;
+      const ringR = base * 0.34;
+      const blobR = base * 0.16;
+      const iconR = base * 0.033;               // 40% smaller than before
+      const conns = CONNECTIONS[chart.id] || {};
+
+      const art = SUBZONE_ART[chart.id];
+
+      // Zone anchors: from the artwork coords when we have art, else a drawn
+      // arc. Each has a display centre (x,y), an edge attach point (ax,ay) for
+      // connectors, and a hit radius r.
+      let imgBox = null;
+      let zoneAnchors;
+      const isRegenArt = art && chart.id === "Regenerative Landscapes";
+      if (art) {
+        const imgW = base * 1.7, imgH = imgW / art.aspect;
+        const imgX = gcx - imgW / 2, imgY = gcy - imgH * 0.6;
+        imgBox = { x: imgX, y: imgY, w: imgW, h: imgH };
+        zoneAnchors = zones.map((z, i) => {
+          const g = art.zones[z.name] || { cx: 0.5, cy: 0.3, r: 0.12, ax: 0.5, ay: 0.42 };
+          // Attach points are UI-tunable for Regen (settings azBx/azBy).
+          const axf = isRegenArt ? settings[`azBx${i}`] : undefined;
+          const ayf = isRegenArt ? settings[`azBy${i}`] : undefined;
+          return { name: z.name, index: i,
+            x: imgX + g.cx * imgW, y: imgY + g.cy * imgH,
+            ax: imgX + (axf ?? g.ax) * imgW, ay: imgY + (ayf ?? g.ay) * imgH, r: g.r * imgW };
+        });
+      } else {
+        zoneAnchors = zones.map((z, i) => {
+          const t = zones.length === 1 ? 0.5 : i / (zones.length - 1);
+          const a = Math.PI * (1 - t);
+          const zx = gcx + Math.cos(a) * ringR, zy = gcy - Math.sin(a) * ringR;
+          return { name: z.name, x: zx, y: zy, ax: zx, ay: zy, r: blobR };
+        });
+      }
+      const zoneByName = {};
+      zoneAnchors.forEach(za => { zoneByName[za.name] = za; });
+
+      // Where the free nodes cluster: the lower-left "Node Area" of the artwork
+      // when we have art, else a band below the drawn arc.
+      const nodeAreaX = art ? imgBox.x + imgBox.w * (isRegenArt ? settings.naBx : 0.15) : gcx;
+      const nodeAreaY = art ? imgBox.y + imgBox.h * (isRegenArt ? settings.naBy : 0.98) : gcy + blobR * 2.6;
+
+      // Free node copies (independent of the master's simulation), seeded near
+      // the node area.
+      const dNodes = realNodes.map((d, i) => {
+        const ang = (i / Math.max(1, realNodes.length)) * Math.PI * 2;
+        return Object.assign({}, d, {
+          x: nodeAreaX + Math.cos(ang) * base * 0.12,
+          y: nodeAreaY + Math.sin(ang) * base * 0.12
+        });
+      });
+      const links = [];
+      dNodes.forEach(dn => (conns[dn.id] || []).forEach(zn => {
+        if (zoneByName[zn]) links.push({ source: dn, target: zoneByName[zn] });
+      }));
+
+      // Layers, back to front: contour, connectors, artwork/blobs, hits, nodes.
+      const cHalf = base * 0.72;
+      const cox = nodeAreaX - cHalf, coy = nodeAreaY - cHalf;
+      const contourG = detailGroup.append("g")
+        .attr("transform", `translate(${cox},${coy})`)
+        .style("pointer-events", "none").style("mix-blend-mode", "multiply");
+      const dContour = d3.contourDensity().x(p => p.x - cox).y(p => p.y - coy)
+        .size([cHalf * 2, cHalf * 2]).bandwidth(settings.bandwidth).thresholds(settings.thresholds);
+      function updateContour() {
+        contourG.selectAll("path").data(dContour(dNodes)).join("path")
+          .attr("d", d3.geoPath()).attr("fill", chart.color).attr("fill-opacity", 0.08).attr("stroke", "none");
+      }
+
+      const connectorG = detailGroup.append("g").attr("class", "zone-links").style("pointer-events", "none");
+
+      if (art) {
+        // Designed sub-zone artwork (one combined image).
+        detailGroup.append("image")
+          .attr("href", art.src).attr("xlink:href", art.src)
+          .attr("x", imgBox.x).attr("y", imgBox.y).attr("width", imgBox.w).attr("height", imgBox.h)
+          .attr("preserveAspectRatio", "xMidYMid meet").style("pointer-events", "none");
+      } else {
+        // Drawn placeholder blobs.
+        zones.forEach((z, i) => {
+          const za = zoneByName[z.name];
+          const g = detailGroup.append("g").attr("transform", `translate(${za.x},${za.y})`).style("pointer-events", "none");
+          g.append("path")
+            .attr("d", blobPath(0, 0, blobR, (i + 1) * 97 + chart.id.length * 13))
+            .attr("fill", chart.color).attr("fill-opacity", 0.55)
+            .attr("stroke", chart.color).attr("stroke-opacity", 0.5);
+          g.append("foreignObject").attr("x", -blobR).attr("y", -blobR)
+            .attr("width", blobR * 2).attr("height", blobR * 2).style("overflow", "visible")
+            .append("xhtml:div").attr("class", "subzone-label")
+            .html(`<div class="sz-name">${esc(z.name)}</div><div class="sz-desc">${esc(z.desc)}</div>`);
+        });
+      }
+
+      // Curved "bent" connector, dotted — pins to the zone's edge attach point.
+      function connPath(l) {
+        const s = l.source, t = l.target, my = (s.y + t.ay) / 2;
+        return `M${s.x},${s.y}C${s.x},${my} ${t.ax},${my} ${t.ax},${t.ay}`;
+      }
+      const linkSel = connectorG.selectAll("path").data(links).join("path")
+        .attr("fill", "none").attr("stroke", chart.color).attr("stroke-opacity", 0.5)
+        .attr("stroke-width", base * 0.008).attr("stroke-linecap", "round")
+        .attr("stroke-dasharray", `0.1 ${base * 0.022}`);
+
+      // Invisible per-zone hit targets over the artwork; hovering highlights
+      // that zone's connectors.
+      if (art) {
+        zoneAnchors.forEach(za => {
+          detailGroup.append("circle")
+            .attr("cx", za.x).attr("cy", za.y).attr("r", za.r)
+            .attr("fill", "transparent").style("pointer-events", "auto").style("cursor", "pointer")
+            .on("mouseenter", () => linkSel.attr("stroke-opacity", l => l.target === za ? 0.95 : 0.1))
+            .on("mouseleave", () => linkSel.attr("stroke-opacity", 0.5));
+        });
+      }
+
+      // Draggable project nodes (same as master), each with a hover info card.
+      const nodeSel = detailGroup.selectAll("g.detail-node").data(dNodes).join("g")
+        .attr("class", "detail-node").style("pointer-events", "auto").style("cursor", "grab");
+      nodeSel.append("image").attr("href", d => d.icon).attr("xlink:href", d => d.icon)
+        .attr("x", -iconR).attr("y", -iconR).attr("width", iconR * 2).attr("height", iconR * 2)
+        .attr("preserveAspectRatio", "xMidYMid meet");
+      nodeSel.append("foreignObject").attr("x", -base * 0.08).attr("y", iconR)
+        .attr("width", base * 0.16).attr("height", base * 0.1).style("overflow", "visible").style("pointer-events", "none")
+        .append("xhtml:div").attr("class", "detail-node-label").html(d => esc(d.label || d.id));
+      nodeSel.each(function(d) {
+        const g = d3.select(this);
+        const cardFO = g.append("foreignObject")
+          .attr("x", -card.w - iconR * 1.4).attr("y", -card.h * 0.5)
+          .attr("width", card.w).attr("height", card.h * 1.7)
+          .style("overflow", "visible").style("opacity", 0).style("pointer-events", "none");
+        cardFO.append("xhtml:div").html(cardHTML(d, chart));
+        g.on("mouseenter", () => cardFO.interrupt().transition().duration(140).style("opacity", 1))
+         .on("mouseleave", () => cardFO.interrupt().transition().duration(140).style("opacity", 0));
+      });
+
+      // Force simulation (nodes only; zones are static anchors). With art the
+      // nodes gather into a loose cluster in the Node Area (lower-left); without
+      // art they line up in a band below the arc, under their zone(s)' attach x.
+      const targetX = d => {
+        const zs = (conns[d.id] || []).map(zn => zoneByName[zn]).filter(Boolean);
+        return zs.length ? d3.mean(zs, z => z.ax) : gcx;
+      };
+      let tk = 0;
+      const sim = d3.forceSimulation(dNodes)
+        .force("x", d3.forceX(art ? nodeAreaX : targetX).strength(art ? 0.09 : 0.5))
+        .force("y", d3.forceY(nodeAreaY).strength(art ? 0.09 : 0.55))
+        .force("charge", d3.forceManyBody().strength(art ? -base * 0.9 : -base * 0.35))
+        .force("collide", d3.forceCollide(iconR + base * 0.045))
+        .on("tick", () => {
+          nodeSel.attr("transform", d => `translate(${d.x},${d.y})`);
+          linkSel.attr("d", connPath);
+          if (tk++ % 3 === 0) updateContour();
+        })
+        .on("end", updateContour);
+
+      nodeSel.call(d3.drag()
+        .on("start", function (event, d) {
+          event.sourceEvent.stopPropagation();
+          if (!event.active) sim.alphaTarget(0.3).restart();
+          d.fx = d.x; d.fy = d.y;
+          d3.select(this).style("cursor", "grabbing");
+        })
+        .on("drag", function (event, d) { d.fx = event.x; d.fy = event.y; })
+        .on("end", function (event, d) {
+          if (!event.active) sim.alphaTarget(0);
+          d.fx = null; d.fy = null;
+          d3.select(this).style("cursor", "grab");
+        }));
+
+      // Zoom frames the whole composition (artwork + the Node Area cluster).
+      if (art) {
+        const naR = base * 0.65;
+        const left = Math.min(imgBox.x, nodeAreaX - naR);
+        const right = Math.max(imgBox.x + imgBox.w, nodeAreaX + naR);
+        const top = imgBox.y;
+        const bottom = Math.max(imgBox.y + imgBox.h, nodeAreaY + naR);
+        detailCenter = { x: (left + right) / 2, y: (top + bottom) / 2 };
+        detailExtent = 0.5 * Math.max(right - left, bottom - top) + base * 0.05;
+      } else {
+        detailCenter = { x: gcx, y: gcy };
+        detailExtent = ringR + base * 0.42;
+      }
+
+      // Live tuning hooks used by the settings panel.
+      if (art) {
+        detailControls = {
+          setAttach(i, xf, yf) {
+            const za = zoneAnchors[i];
+            if (!za) return;
+            za.ax = imgBox.x + xf * imgBox.w;
+            za.ay = imgBox.y + yf * imgBox.h;
+            linkSel.attr("d", connPath);
+          },
+          setNodeArea(xf, yf) {
+            const nx = imgBox.x + xf * imgBox.w, ny = imgBox.y + yf * imgBox.h;
+            sim.force("x", d3.forceX(nx).strength(0.09));
+            sim.force("y", d3.forceY(ny).strength(0.09));
+            sim.alpha(0.5).restart();
+            contourG.attr("transform", `translate(${nx - cHalf},${ny - cHalf})`);
+            dContour.x(p => p.x - (nx - cHalf)).y(p => p.y - (ny - cHalf));
+          }
+        };
+      }
+    })();
+
     const localLinkLayer = inner.append("g")
       .attr("stroke", "#94a3b8")
       .attr("stroke-opacity", 0.45);
@@ -1164,6 +1489,10 @@ async function _2(FileAttachment,d3)
       chart,
       index,
       root: panel,
+      detailGroup,
+      detailCenter,
+      detailExtent,
+      detailControls,
       nodes,
       node,
       labels,
@@ -1575,6 +1904,11 @@ async function _2(FileAttachment,d3)
     }
   });
 
+  // Shared layer for the per-theme sub-zone "detail maps", positioned outside
+  // the master (see makePanel). Created before the panels so it sits behind
+  // them — they never overlap spatially anyway.
+  const detailLayer = zoomLayer.append("g").attr("class", "detail-maps");
+
   charts.forEach((chart, index) => {
     panels.push(makePanel(chart, index));
   });
@@ -1630,24 +1964,28 @@ async function _2(FileAttachment,d3)
   // the richer per-theme detail maps (in Figma) are a later phase.
   let soloedIndex = null;
 
-  function panelFitTransform(index) {
-    const {x: px, y: py} = panelPosition(index);
-    const pad = 0.9;
+  // Fit transform that pans + zooms to a theme's detail map (which lives
+  // outside the master, see makePanel).
+  function detailFitTransform(index) {
+    const p = panels[index];
+    if (!p || !p.detailCenter) return overviewTransform;
+    const pad = 1.25;
     const k = Math.max(0.6, Math.min(3,
-      Math.min(viewportW / layout.panelW, viewportH / layout.panelH) * pad));
-    const cx = px + layout.panelW / 2;
-    const cy = py + layout.panelH / 2;
+      Math.min(viewportW, viewportH) / (2 * p.detailExtent * pad)));
     return d3.zoomIdentity
-      .translate(viewportW / 2 - k * cx, viewportH / 2 - k * cy)
+      .translate(viewportW / 2 - k * p.detailCenter.x, viewportH / 2 - k * p.detailCenter.y)
       .scale(k);
   }
 
   function soloPanel(index) {
     soloedIndex = index;
-    svg.transition().duration(650).call(zoom.transform, panelFitTransform(index));
+    svg.transition().duration(750).call(zoom.transform, detailFitTransform(index));
+    // Recede the whole master; light up this theme's detail map, keep the
+    // others faint.
     panels.forEach((p, i) => {
-      p.root.interrupt().transition().duration(400)
-        .style("opacity", i === index ? 1 : 0.12);
+      p.root.interrupt().transition().duration(500).style("opacity", 0.12);
+      p.detailGroup.interrupt().transition().duration(600)
+        .style("opacity", i === index ? 1 : SUBZONE_DIM);
     });
     setChrome(charts[index].id);
   }
@@ -1655,8 +1993,11 @@ async function _2(FileAttachment,d3)
   function exitSolo() {
     if (soloedIndex === null) return;
     soloedIndex = null;
-    svg.transition().duration(650).call(zoom.transform, overviewTransform);
-    panels.forEach(p => p.root.interrupt().transition().duration(400).style("opacity", 1));
+    svg.transition().duration(750).call(zoom.transform, overviewTransform);
+    panels.forEach(p => {
+      p.root.interrupt().transition().duration(500).style("opacity", 1);
+      p.detailGroup.interrupt().transition().duration(600).style("opacity", SUBZONE_DIM);
+    });
     setChrome("master");
   }
 
@@ -1687,6 +2028,12 @@ async function _2(FileAttachment,d3)
   const chromeStyle = d3.create("style").text(`
     .ecca-chrome { font-family: poppins, system-ui, sans-serif; box-sizing: border-box; }
 
+    /* Placeholder sub-zone blob labels (in-SVG foreignObjects). */
+    .subzone-label { font-family: poppins, system-ui, sans-serif; color: #2c3a22; text-align: center; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 0 12%; box-sizing: border-box; }
+    .subzone-label .sz-name { font-weight: 700; font-size: 11px; line-height: 1.12; margin-bottom: 3px; }
+    .subzone-label .sz-desc { font-size: 7.5px; line-height: 1.25; opacity: .9; }
+    .detail-node-label { font-family: poppins, system-ui, sans-serif; font-size: 8px; font-weight: 600; color: #334155; text-align: center; line-height: 1.15; pointer-events: none; }
+
     /* Header speech bubble (top-left). --hbg is set per-view so the tail
        matches the bubble colour. */
     .ecca-header {
@@ -1703,11 +2050,24 @@ async function _2(FileAttachment,d3)
     }
     .ecca-header .ecca-back { cursor: pointer; font-size: 12px; font-weight: 600; opacity: .85; margin-bottom: 8px; display: inline-block; }
     .ecca-header .ecca-back:hover { opacity: 1; }
-    .ecca-header .ecca-logo-img { display: block; width: 180px; height: auto; margin-bottom: 10px; }
+    /* Logo straddles the top edge of the bubble (master view only). */
+    .ecca-header.has-logo { padding-top: 48px; }
+    .ecca-header .ecca-logo-img { position: absolute; top: -26px; left: 18px; width: 184px; height: auto; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.16)); }
     .ecca-header .ep-pill { display: inline-block; background: rgba(255,255,255,.85); color: #3a4a2a; font-weight: 700; font-size: 12px; padding: 3px 10px; border-radius: 6px; margin-bottom: 8px; }
     .ecca-header .kicker { font-family: gelica, Georgia, serif; font-size: 23px; font-weight: 700; margin-bottom: 6px; }
     .ecca-header .title { font-size: 26px; font-weight: 800; line-height: 1.06; margin-bottom: 8px; }
     .ecca-header .body { font-size: 13px; line-height: 1.45; opacity: .92; }
+
+    /* Bottom-left link out to the full annual report page. */
+    .ecca-report {
+      position: fixed; left: 20px; bottom: 20px; z-index: 9;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #F2F1ED; color: #003932; text-decoration: none;
+      font-weight: 600; font-size: 13px; padding: 10px 16px;
+      border-radius: 12px; box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+      transition: background .2s ease, transform .2s ease;
+    }
+    .ecca-report:hover { background: #fff; transform: translateY(-1px); }
 
     /* Bottom-right stack: How-to-Explore bubble over the legend + character. */
     .ecca-br { position: fixed; right: 20px; bottom: 20px; z-index: 9; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
@@ -1764,6 +2124,13 @@ async function _2(FileAttachment,d3)
 
   const headerBlob = d3.create("div").attr("class", "ecca-header ecca-chrome");
   const headerInner = headerBlob.append("div").attr("class", "ecca-header-inner");
+
+  // Bottom-left link to the full annual-report page (a separate page being
+  // built) — placeholder URL for now, swap in the real one when it's live.
+  const REPORT_URL = "https://example.com/ecca-annual-report-2026"; // TODO: real report URL
+  const reportLink = d3.create("a").attr("class", "ecca-report ecca-chrome")
+    .attr("href", REPORT_URL).attr("target", "_blank").attr("rel", "noopener noreferrer")
+    .html(`📄 Read ECCA Annual Report 2026 →`);
 
   // Per-view character illustration (the SVGs you exported). Doubles as the
   // legend toggle — clicking the character hides/shows the legend panel.
@@ -1853,7 +2220,7 @@ async function _2(FileAttachment,d3)
 
   function setChrome(mode) {
     if (mode === "master") {
-      headerBlob.style("--hbg", "#D6EDD3").style("color", "#003932");
+      headerBlob.classed("has-logo", true).style("--hbg", "#D6EDD3").style("color", "#003932");
       headerInner.html(`
         <img class="ecca-logo-img" src="./characters/logo.svg" alt="The ECCAsystem">
         <div class="kicker">How Change Moves</div>
@@ -1865,10 +2232,11 @@ async function _2(FileAttachment,d3)
       const chart = charts.find(c => c.id === mode);
       const letter = ENTRY_POINTS[mode] || "";
       const tagline = THEME_TAGLINES[mode] || "";
-      headerBlob.style("--hbg", chart.color).style("color", "#f4f1e8");
+      headerBlob.classed("has-logo", false).style("--hbg", chart.color).style("color", "#f4f1e8");
       headerInner.html(`
+        <div style="display: flex; flex-direction: column;">
         <div class="ecca-back">← Overview</div>
-        <div class="ep-pill">Entry Point ${letter}</div>
+        <div class="ep-pill">Entry Point ${letter}</div></div>
         <div class="title">${mode}</div>
         <div class="body">${tagline}</div>
       `);
@@ -1886,9 +2254,18 @@ async function _2(FileAttachment,d3)
     .style("right", "12px")
     .style("top", "12px")
     .style("z-index", "11")
+    .style("display", "none")   // dev panel: hidden by default, toggle with "d"
     .style("font-family", "system-ui, sans-serif")
     .style("font-size", "12px")
     .style("color", "#1b1e23");
+
+  // Show/hide the dev settings panel with the "d" key (kept out of the way for
+  // the client build; still available for tuning).
+  d3.select(window).on("keydown.devpanel", (event) => {
+    if ((event.key === "d" || event.key === "D") && !/^(input|textarea)$/i.test(event.target.tagName)) {
+      settingsPanel.style("display", settingsPanel.style("display") === "none" ? "block" : "none");
+    }
+  });
 
   const settingsToggle = settingsPanel.append("button")
     .text("⚙ Settings")
@@ -1987,6 +2364,39 @@ async function _2(FileAttachment,d3)
   addDeferredSettingSlider("Max panel-cluster width (% of screen)", "maxContentWPct", 20, 100, 1);
   addDeferredSettingSlider("Max panel-cluster height (% of screen)", "maxContentHPct", 20, 100, 1);
 
+  // Live sub-zone tuning (Regen art): attach points + Node Area. Applies
+  // immediately (no reload) via the panel's detailControls.
+  function addLiveSlider(label, key, min, max, step, apply) {
+    const row = settingsBody.append("div").style("margin-bottom", "10px");
+    const header = row.append("div").style("display", "flex")
+      .style("justify-content", "space-between").style("margin-bottom", "4px");
+    header.append("span").text(label);
+    const valueLabel = header.append("span").style("color", "#6b7280").text(settings[key]);
+    row.append("input").attr("type", "range").attr("min", min).attr("max", max).attr("step", step)
+      .property("value", settings[key]).style("width", "100%")
+      .on("input", function () {
+        settings[key] = +this.value;
+        valueLabel.text(this.value);
+        apply();
+        saveSettings();
+      });
+  }
+  const artPanel = panels.find(p => p.detailControls);
+  if (artPanel) {
+    const dc = artPanel.detailControls;
+    settingsBody.append("div").style("margin", "6px 0 8px").style("border-top", "1px solid #eee");
+    settingsBody.append("div").style("font-weight", "700").style("margin-bottom", "6px")
+      .text("Regen sub-zones (live)");
+    (SUBZONES["Regenerative Landscapes"] || []).forEach((z, i) => {
+      const applyAttach = () => dc.setAttach(i, settings[`azBx${i}`], settings[`azBy${i}`]);
+      addLiveSlider(`${z.name} — attach X`, `azBx${i}`, 0, 1, 0.005, applyAttach);
+      addLiveSlider(`${z.name} — attach Y`, `azBy${i}`, 0, 1, 0.005, applyAttach);
+    });
+    const applyNodeArea = () => dc.setNodeArea(settings.naBx, settings.naBy);
+    addLiveSlider("Node Area X", "naBx", 0, 1, 0.005, applyNodeArea);
+    addLiveSlider("Node Area Y", "naBy", 0, 1, 0.005, applyNodeArea);
+  }
+
   const reloadHint = settingsBody.append("button")
     .text("Reload to apply size change")
     .style("display", "none")
@@ -2002,6 +2412,7 @@ async function _2(FileAttachment,d3)
   wrapper.node().appendChild(svg.node());
   wrapper.node().appendChild(chromeStyle.node());
   wrapper.node().appendChild(headerBlob.node());
+  wrapper.node().appendChild(reportLink.node());
   wrapper.node().appendChild(bottomRight.node());
   wrapper.node().appendChild(settingsPanel.node());
 
