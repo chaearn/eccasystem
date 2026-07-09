@@ -1649,7 +1649,7 @@ async function _2(FileAttachment,d3)
       p.root.interrupt().transition().duration(400)
         .style("opacity", i === index ? 1 : 0.12);
     });
-    overviewButton.style("display", "block");
+    setChrome(charts[index].id);
   }
 
   function exitSolo() {
@@ -1657,37 +1657,235 @@ async function _2(FileAttachment,d3)
     soloedIndex = null;
     svg.transition().duration(650).call(zoom.transform, overviewTransform);
     panels.forEach(p => p.root.interrupt().transition().duration(400).style("opacity", 1));
-    overviewButton.style("display", "none");
+    setChrome("master");
   }
-
-  const overviewButton = d3.create("button")
-    .text("← Overview")
-    .style("position", "fixed")
-    .style("left", "12px")
-    .style("top", "12px")
-    .style("z-index", "10")
-    .style("display", "none")
-    .style("padding", "7px 12px")
-    .style("border-radius", "8px")
-    .style("border", "1px solid #d8d5cd")
-    .style("background", "#fff")
-    .style("box-shadow", "0 2px 8px rgba(0,0,0,0.12)")
-    .style("font-family", "system-ui, sans-serif")
-    .style("font-size", "12px")
-    .style("cursor", "pointer");
-  overviewButton.on("click", exitSolo);
 
   d3.select(window).on("keydown.solo", (event) => {
     if (event.key === "Escape") exitSolo();
   });
+
+  // --- Map UI chrome: header context blob + legend ---------------------------
+  // Overlaid HTML (like the settings panel). setChrome swaps between the
+  // master-map copy and a focused theme's copy, driven by soloPanel/exitSolo.
+  // The theme header carries the "← Overview" back link. Legend collapses on
+  // click of its header. Illustrations (the character, Areas-of-Work icons)
+  // are placeholders for now — real branded art drops in later. Copy for
+  // themes other than Regenerative Landscapes is a TODO from the Figma file.
+  const ENTRY_POINTS = {
+    "Healthy Oceans": "A",
+    "Regenerative Landscapes": "B",
+    "Inclusive Communities": "C",
+    "Cultural Narratives": "D"
+  };
+  const THEME_TAGLINES = {
+    "Healthy Oceans": "The pressures here are visible. Overfishing. Habitat loss. Plastic leaking into the sea faster than it can be recovered.",
+    "Regenerative Landscapes": "Land is not just a backdrop to climate and biodiversity goals. It is the operating system underlying them.",
+    "Inclusive Communities": "Economic inclusion is often treated as a separate social issue — important, but secondary to the bigger systemic challenges.",
+    "Cultural Narratives": "Culture shapes what we take for granted."
+  };
+
+  const chromeStyle = d3.create("style").text(`
+    .ecca-chrome { font-family: poppins, system-ui, sans-serif; box-sizing: border-box; }
+
+    /* Header speech bubble (top-left). --hbg is set per-view so the tail
+       matches the bubble colour. */
+    .ecca-header {
+      position: fixed; left: 20px; top: 20px; z-index: 9; max-width: 320px;
+      background: var(--hbg, #D6EDD3); color: #003932;
+      border-radius: 30px 30px 30px 12px;
+      padding: 18px 22px; box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+      transition: background .4s ease, color .4s ease;
+    }
+    .ecca-header::after {
+      content: ""; position: absolute; bottom: -16px; left: 46px;
+      width: 0; height: 0; border-left: 26px solid transparent; border-right: 0;
+      border-top: 22px solid var(--hbg, #D6EDD3); transition: border-top-color .4s ease;
+    }
+    .ecca-header .ecca-back { cursor: pointer; font-size: 12px; font-weight: 600; opacity: .85; margin-bottom: 8px; display: inline-block; }
+    .ecca-header .ecca-back:hover { opacity: 1; }
+    .ecca-header .ecca-logo-img { display: block; width: 180px; height: auto; margin-bottom: 10px; }
+    .ecca-header .ep-pill { display: inline-block; background: rgba(255,255,255,.85); color: #3a4a2a; font-weight: 700; font-size: 12px; padding: 3px 10px; border-radius: 6px; margin-bottom: 8px; }
+    .ecca-header .kicker { font-family: gelica, Georgia, serif; font-size: 23px; font-weight: 700; margin-bottom: 6px; }
+    .ecca-header .title { font-size: 26px; font-weight: 800; line-height: 1.06; margin-bottom: 8px; }
+    .ecca-header .body { font-size: 13px; line-height: 1.45; opacity: .92; }
+
+    /* Bottom-right stack: How-to-Explore bubble over the legend + character. */
+    .ecca-br { position: fixed; right: 20px; bottom: 20px; z-index: 9; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .ecca-explore {
+      position: relative; max-width: 264px; margin-right: 34px;
+      background: #D6EDD3; color: #005F57; border-radius: 26px 26px 26px 10px;
+      padding: 14px 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    }
+    .ecca-explore::after {
+      content: ""; position: absolute; bottom: -13px; right: 40px;
+      width: 0; height: 0; border-right: 22px solid transparent; border-left: 0;
+      border-top: 19px solid #D6EDD3;
+    }
+    .ecca-explore h3 { font-family: gelica, Georgia, serif; margin: 0 0 6px; font-size: 20px; font-weight: 700; line-height: 1.1; }
+    .ecca-explore p { margin: 0; font-size: 12px; line-height: 1.4; }
+
+    .ecca-legend-row { display: flex; flex-direction: row; align-items: flex-end; gap: 0; }
+    .ecca-character {
+      height: 170px; width: auto; cursor: pointer; user-select: none;
+      margin-left: -18px; align-self: flex-end;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
+      transition: transform .2s ease;
+    }
+    .ecca-character:hover { transform: translateY(-2px); }
+    .ecca-legend {
+      background: #003932; color: #eef2ea; border-radius: 16px;
+      padding: 12px 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.22); font-size: 12px;
+    }
+    .ecca-legend.collapsed { display: none; }
+    .ecca-legend .legend-sections { display: flex; flex-direction: column; gap: 12px; }
+    .ecca-legend h4 { margin: 0 0 8px; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; opacity: .8; }
+    .ecca-legend .row { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; white-space: nowrap; }
+    .ecca-legend .swatch { width: 16px; height: 16px; border-radius: 50%; flex: none; }
+    .ecca-legend .ico { flex: none; }
+    .ecca-legend .pill { font-size: 10px; font-weight: 600; padding: 2px 9px; border-radius: 5px; flex: none; background: rgba(214,237,211,0.14); color: #D6EDD3; }
+
+    /* Mobile: scale the character up, lay the legend out horizontally, and
+       size the bubbles for a small screen. */
+    @media (max-width: 768px) {
+      .ecca-character { height: 250px; margin-left: -28px; }
+      .ecca-legend { font-size: 15px; padding: 16px 20px; }
+      .ecca-legend .legend-sections { flex-direction: row; gap: 26px; }
+      .ecca-legend h4 { font-size: 12px; }
+      .ecca-header { max-width: 66vw; }
+      .ecca-header .title { font-size: 30px; }
+      .ecca-header .kicker { font-size: 28px; }
+      .ecca-header .ecca-logo-img { width: 220px; }
+      .ecca-header .body { font-size: 15px; }
+      .ecca-explore { max-width: 300px; }
+      .ecca-explore h3 { font-size: 22px; }
+      .ecca-explore p { font-size: 14px; }
+    }
+  `);
+
+  const headerBlob = d3.create("div").attr("class", "ecca-header ecca-chrome");
+  const headerInner = headerBlob.append("div").attr("class", "ecca-header-inner");
+
+  // Per-view character illustration (the SVGs you exported). Doubles as the
+  // legend toggle — clicking the character hides/shows the legend panel.
+  const CHARACTERS = {
+    master: "./characters/master.svg",
+    "Healthy Oceans": "./characters/entrypoint-a.svg",
+    "Regenerative Landscapes": "./characters/entrypoint-b.svg",
+    "Inclusive Communities": "./characters/entrypoint-c.svg",
+    "Cultural Narratives": "./characters/entrypoint-d.svg"
+  };
+
+  // ECCA brand palette (from the project swatch sheet).
+  const PAL = {
+    eccaGreen: "#005F57", darkGreen: "#003932", lightGreen: "#D6EDD3",
+    plum: "#530E2A", midPlum: "#C37F98", lightPlum: "#D492AB",
+    khaki: "#6F7042", midKhaki: "#9E9C64", lightKhaki: "#C2C7A1",
+    pink: "#FF99B3", midPink: "#FFC0C2", lightPink: "#FFD0D1",
+    yellow: "#FFC71B", midYellow: "#FFDE4A", lightYellow: "#FFE572",
+    peach: "#FF9E74", midPeach: "#FFBA8B", lightPeach: "#FFC69F",
+    cream: "#F2F1ED", blue: "#3F8FFF", midBlue: "#589BFF", lightBlue: "#9BC1FC"
+  };
+
+  const bottomRight = d3.create("div").attr("class", "ecca-br ecca-chrome");
+  const exploreBubble = bottomRight.append("div").attr("class", "ecca-explore")
+    .html(`<h3>How to Explore The ECCAsystem</h3><p>Hover, Click, Pan, Zoom to interact with the map. See the legend as reference.</p>`);
+  const legendRow = bottomRight.append("div").attr("class", "ecca-legend-row");
+  const legendPanel = legendRow.append("div").attr("class", "ecca-legend ecca-chrome");
+  const legendBody = legendPanel.append("div").attr("class", "ecca-legend-body");
+  const characterImg = legendRow.append("img").attr("class", "ecca-character").attr("alt", "");
+  characterImg.on("click", () => {
+    legendPanel.classed("collapsed", !legendPanel.classed("collapsed"));
+  });
+
+  // Inline arrow icon — single- or double-headed — for the Arrow Color Key.
+  function arrowIcon(color, double) {
+    const w = 28, h = 12, y = 6, x2 = w - 4, x1 = double ? 8 : 2;
+    const rHead = `<path d="M${x2} ${y} l-6 -4 M${x2} ${y} l-6 4" stroke="${color}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    const lHead = double ? `<path d="M6 ${y} l6 -4 M6 ${y} l6 4" stroke="${color}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` : "";
+    return `<svg class="ico" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/>${lHead}${rHead}</svg>`;
+  }
+  // The blue -> peach curved "Cross Connection" arrow from the master legend.
+  function crossConnIcon() {
+    return `<svg class="ico" width="118" height="30" viewBox="0 0 118 30"><defs><linearGradient id="ccg" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="${PAL.blue}"/><stop offset="1" stop-color="${PAL.peach}"/></linearGradient></defs><path d="M6 22 Q58 0 108 14" stroke="url(#ccg)" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="6" cy="22" r="3.6" fill="${PAL.blue}"/><path d="M108 14 l-9 -1.5 M108 14 l-6.5 6" stroke="${PAL.peach}" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  }
+
+  function legendMasterHTML() {
+    const zones = ["Pilot", "Validate", "Build", "Scale"];
+    const descs = ["First test", "Building evidence", "Strengthening capacity", "Expanding reach"];
+    return `
+      <div class="legend-sections">
+        <div class="legend-section">
+          <h4>4 Entry Point Zones</h4>
+          ${zones.map((n, i) => `<div class="row"><span class="pill">${n}</span><span>${descs[i]}</span></div>`).join("")}
+        </div>
+        <div class="legend-section">
+          <h4>Legends</h4>
+          <div class="row">${crossConnIcon()}<span>Cross Connection</span></div>
+        </div>
+      </div>
+    `;
+  }
+  function legendThemeHTML() {
+    const arrows = [
+      ["Feedback &amp; learning loop", PAL.yellow, true],
+      ["Resource &amp; knowledge flow", PAL.lightGreen, false],
+      ["Community-driven change", PAL.midPlum, false]
+    ];
+    const areas = [
+      ["Frontline &amp; Communities", PAL.pink],
+      ["Science &amp; Evidence", PAL.yellow],
+      ["Markets &amp; Finance", PAL.midKhaki],
+      ["Network &amp; Policy", PAL.lightKhaki]
+    ];
+    return `
+      <div class="legend-sections">
+        <div class="legend-section">
+          <h4>Arrow Color Key</h4>
+          ${arrows.map(([n, c, d]) => `<div class="row">${arrowIcon(c, d)}<span>${n}</span></div>`).join("")}
+        </div>
+        <div class="legend-section">
+          <h4>Areas of Work</h4>
+          ${areas.map(([n, c]) => `<div class="row"><span class="swatch" style="background:${c}"></span><span>${n}</span></div>`).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  function setChrome(mode) {
+    if (mode === "master") {
+      headerBlob.style("--hbg", "#D6EDD3").style("color", "#003932");
+      headerInner.html(`
+        <img class="ecca-logo-img" src="./characters/logo.svg" alt="The ECCAsystem">
+        <div class="kicker">How Change Moves</div>
+        <div class="body">What you're looking at isn't a portfolio map. It's a snapshot of relationships in motion.</div>
+      `);
+      characterImg.attr("src", CHARACTERS.master);
+      legendBody.html(legendMasterHTML());
+    } else {
+      const chart = charts.find(c => c.id === mode);
+      const letter = ENTRY_POINTS[mode] || "";
+      const tagline = THEME_TAGLINES[mode] || "";
+      headerBlob.style("--hbg", chart.color).style("color", "#f4f1e8");
+      headerInner.html(`
+        <div class="ecca-back">← Overview</div>
+        <div class="ep-pill">Entry Point ${letter}</div>
+        <div class="title">${mode}</div>
+        <div class="body">${tagline}</div>
+      `);
+      headerInner.select(".ecca-back").on("click", exitSolo);
+      characterImg.attr("src", CHARACTERS[mode] || CHARACTERS.master);
+      legendBody.html(legendThemeHTML());
+    }
+  }
+  setChrome("master");
 
   // Small dev-facing settings panel — bottom right, collapsed by default —
   // for tweaking the contour/label tuning knobs live without editing code.
   const settingsPanel = d3.create("div")
     .style("position", "fixed")
     .style("right", "12px")
-    .style("bottom", "12px")
-    .style("z-index", "10")
+    .style("top", "12px")
+    .style("z-index", "11")
     .style("font-family", "system-ui, sans-serif")
     .style("font-size", "12px")
     .style("color", "#1b1e23");
@@ -1802,8 +2000,10 @@ async function _2(FileAttachment,d3)
 
   const wrapper = d3.create("div").style("position", "relative");
   wrapper.node().appendChild(svg.node());
+  wrapper.node().appendChild(chromeStyle.node());
+  wrapper.node().appendChild(headerBlob.node());
+  wrapper.node().appendChild(bottomRight.node());
   wrapper.node().appendChild(settingsPanel.node());
-  wrapper.node().appendChild(overviewButton.node());
 
   return wrapper.node();
 }
