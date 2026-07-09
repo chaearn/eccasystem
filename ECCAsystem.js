@@ -143,8 +143,12 @@ async function _2(FileAttachment,d3)
   const card = {
     w: cardW,
     h: 160 * cardScale,
-    offsetX: -(208 / 172) * cardW,
-    offsetY: -80 * cardScale
+    // How far the card floats up-and-left of its node — this is what sets the
+    // leader-line length. Bumped out (from -208/172·w and -80) so the line is
+    // longer and reads as a deliberate diagonal rather than the card sitting
+    // right on top of the node.
+    offsetX: -(250 / 172) * cardW,
+    offsetY: -130 * cardScale
   };
 
   const data = await fetch(new URL("./data.json", import.meta.url)).then(r => r.json());
@@ -811,13 +815,15 @@ async function _2(FileAttachment,d3)
 
     const cardNodes = nodes.filter(hasCard);
 
-    const cardLeaders = labelLayer.selectAll("line.card-leader")
+    const cardLeaders = labelLayer.selectAll("path.card-leader")
       .data(cardNodes)
-      .join("line")
+      .join("path")
       .attr("class", "card-leader")
+      .attr("fill", "none")
       .attr("stroke", chart.color)
       .attr("stroke-opacity", 0)
       .attr("stroke-width", 1.1)
+      .attr("stroke-linecap", "round")
       .attr("pointer-events", "none");
 
     const infoCards = labelLayer.selectAll("foreignObject.node-card")
@@ -828,7 +834,14 @@ async function _2(FileAttachment,d3)
       .attr("height", card.h)
       .style("overflow", "visible")
       .style("pointer-events", "none")
-    .style("opacity", 0);
+    .style("opacity", 0)
+      // Part of the hover-intent bridge (see scheduleClear): while a linked
+      // card is focused it's pointer-events:auto, so hovering it cancels the
+      // pending hide and keeps it up long enough to click; leaving re-arms it.
+      // These only fire for the focused card since the rest stay
+      // pointer-events:none.
+      .on("mouseenter", () => cancelClear())
+      .on("mouseleave", () => scheduleClear());
 
     infoCards.append("xhtml:div").html(d => cardHTML(d, chart));
 
@@ -848,6 +861,27 @@ async function _2(FileAttachment,d3)
         x: Math.max(-x, Math.min(d.x + card.offsetX, layout.width - x - w)),
         y: Math.max(-y, Math.min(d.y + card.offsetY, layout.height - y - h))
       };
+    }
+
+    // Leader line as a gentle curve (matching the organic cross-links) from
+    // the card's centre to the node. Anchoring at the centre (rather than the
+    // nearest corner) gives a single stable attach point, so the line doesn't
+    // hop between corners as the node moves; the card paints on top, so the
+    // segment overlapping the card is hidden and the line reads as emerging
+    // from behind it.
+    const LEADER_CURVE = 0.16; // arc height as a fraction of the line's length
+    function leaderPath(d) {
+      const w = d.__cardW ?? card.w;
+      const h = d.__cardH ?? card.h;
+      const pos = clampedCardPos(d, h);
+      const ax = pos.x + w / 2;
+      const ay = pos.y + h / 2;
+      const nx = d.x, ny = d.y;
+      const dx = nx - ax, dy = ny - ay;
+      const len = Math.hypot(dx, dy) || 1;
+      const cx = (nx + ax) / 2 + (-dy / len) * len * LEADER_CURVE;
+      const cy = (ny + ay) / 2 + (dx / len) * len * LEADER_CURVE;
+      return `M${ax},${ay} Q${cx},${cy} ${nx},${ny}`;
     }
 
     // iOS Safari's foreignObject clips content to its declared height
@@ -879,12 +913,17 @@ async function _2(FileAttachment,d3)
           const h = measuredH + 4;
           const w = measuredW > 0 ? measuredW : card.w;
           d.__cardW = w;
+          d.__cardH = h; // real height, used to anchor the leader line
           const g = d3.select(this);
           g.attr("height", h).attr("width", w);
           const pos = clampedCardPos(d, h);
           g.attr("x", pos.x).attr("y", pos.y);
         }
       });
+      // The card may have been repositioned above (real-height clamp), so
+      // re-draw the leaders to stay attached — the tick has usually stopped
+      // by the time this runs.
+      cardLeaders.attr("d", leaderPath);
     }
     measureCardHeights();
     requestAnimationFrame(measureCardHeights);
@@ -976,14 +1015,10 @@ async function _2(FileAttachment,d3)
         .attr("transform", d => labelTransform(d));
 
       infoCards
-        .attr("x", d => clampedCardPos(d).x)
-        .attr("y", d => clampedCardPos(d).y);
+        .attr("x", d => clampedCardPos(d, d.__cardH).x)
+        .attr("y", d => clampedCardPos(d, d.__cardH).y);
 
-      cardLeaders
-        .attr("x1", d => d.x)
-        .attr("y1", d => d.y)
-        .attr("x2", d => clampedCardPos(d).x + (d.__cardW ?? card.w))
-        .attr("y2", d => clampedCardPos(d).y + card.h / 2);
+      cardLeaders.attr("d", leaderPath);
     }
 
     function dragBehavior(simulation) {
@@ -1024,19 +1059,16 @@ async function _2(FileAttachment,d3)
       .call(dragBehavior(simulation))
       .on("mouseenter", (event, d) => {
         // Hover is a transient preview — it shows a node's neighbourhood but
-        // doesn't change what's pinned.
+        // doesn't change what's pinned. Cancel any pending hide so moving
+        // between nodes (or from the card back to a node) doesn't clear.
+        cancelClear();
+        hoverFocus = {chartId: chart.id, nodeId: d.id, getPos: () => ({x: x + d.x, y: y + d.y})};
         focusVisual(chart.id, d.id, {x: x + d.x, y: y + d.y});
       })
-      .on("mouseleave", (event, d) => {
-        // Restore the pinned node's neighbourhood if one is pinned; otherwise
-        // clear. Hide the hovered node's own cross-links first (unless it *is*
-        // the pinned node, whose links focusVisual re-reveals below).
-        if (pinned) {
-          if (pinned.nodeId !== d.id) setNodeCrossLinksVisible(d.id, null, false);
-          focusVisual(pinned.chartId, pinned.nodeId, pinned.getPos());
-        } else {
-          clearVisual(d.id);
-        }
+      .on("mouseleave", () => {
+        // Don't hide immediately — give the pointer time to reach the card
+        // (see scheduleClear / the card handlers).
+        scheduleClear();
       })
       .on("click", (event, d) => {
         // Tap/click pins a node's neighbourhood so it persists without a
@@ -1168,6 +1200,36 @@ async function _2(FileAttachment,d3)
   // touching it reveal. The neighbourhood is exactly the cross-link set —
   // in-panel links are a hidden hub-and-spoke, so they carry no adjacency.
   let pinned = null; // { key, chartId, nodeId, getPos } | null
+
+  // Hover-intent bridge: the card sits offset from its node with a gap between
+  // them, so leaving the node to reach the card would normally hide it before
+  // the pointer arrives. Instead of clearing immediately on node-mouseleave we
+  // schedule the clear after a short grace period; moving onto the card (which
+  // is pointer-events:auto while focused) cancels it, so hover → glide to card
+  // → click "View project" is one gesture. Moving to another node also cancels
+  // (its mouseenter re-focuses). Falls back to the pinned node, or clears.
+  const HOVER_GRACE_MS = 220;
+  let hideTimer = null;
+  let hoverFocus = null; // { chartId, nodeId, getPos } currently previewed via hover
+
+  function cancelClear() {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+  }
+
+  function scheduleClear() {
+    cancelClear();
+    hideTimer = setTimeout(() => {
+      hideTimer = null;
+      const prevId = hoverFocus ? hoverFocus.nodeId : null;
+      if (pinned) {
+        if (prevId != null && prevId !== pinned.nodeId) setNodeCrossLinksVisible(prevId, null, false);
+        focusVisual(pinned.chartId, pinned.nodeId, pinned.getPos());
+      } else {
+        clearVisual(prevId);
+      }
+      hoverFocus = null;
+    }, HOVER_GRACE_MS);
+  }
 
   function focusVisual(chartId, nodeId, canvasPos) {
     const focusKey = `${chartId}::${nodeId}`;
