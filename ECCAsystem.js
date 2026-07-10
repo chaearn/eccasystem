@@ -72,16 +72,9 @@ async function _2(FileAttachment,d3)
     cardPadTop: 0.75,
     cardPadBottom: 0.5,
     cardPadH: 0.625,
-    // Sub-zone artwork tuning for Regenerative Landscapes (Entry Point B).
-    // Connector attach points (azBx/azBy, per zone index 0-4) and the Node Area
-    // cluster centre (naBx/naBy) — all normalized 0-1 to the artwork image.
-    // Live-adjustable in the settings panel.
-    azBx0: 0.18, azBy0: 0.44,
-    azBx1: 0.44, azBy1: 0.37,
-    azBx2: 0.635, azBy2: 0.39,
-    azBx3: 0.705, azBy3: 0.565,
-    azBx4: 0.695, azBy4: 0.795,
-    naBx: 0.41, naBy: 0.69
+    // Sub-zone artwork tuning is stored per theme as dynamic keys
+    // (sz<L>ax<i> / sz<L>ay<i> for attach points, sz<L>nax / sz<L>nay for the
+    // Node Area) — added on demand when tuned; defaults come from SUBZONE_ART.
   }, storedSettings);
   function saveSettings() {
     try {
@@ -652,20 +645,49 @@ async function _2(FileAttachment,d3)
   // Coords are eyeballed — tune cx/cy (hit-target centre), r (hit radius),
   // ax/ay (connector attach point, on the blob's lower edge).
   const SUBZONE_ART = {
-    "Regenerative Landscapes": {
-      src: "./characters/subzone-b.png",   // rasterized from the (huge) source SVG
-      aspect: 1.25,                         // image width / height
+    "Healthy Oceans": {
+      letter: "A", src: "./characters/subzone-a.png", aspect: 2.233,
+      nodeArea: { x: 0.52, y: 1.125 },
       zones: {
-        "Community Forestry & Stewardship": { cx: 0.18, cy: 0.30, r: 0.15, ax: 0.18, ay: 0.44 },
-        "Land Rights & Tenure":             { cx: 0.44, cy: 0.22, r: 0.15, ax: 0.44, ay: 0.37 },
-        "Landscape Restoration":            { cx: 0.71, cy: 0.30, r: 0.13, ax: 0.635, ay: 0.39 },
-        "Regenerative Agriculture":         { cx: 0.82, cy: 0.55, r: 0.12, ax: 0.705, ay: 0.565 },
-        "Just Transition":                  { cx: 0.79, cy: 0.80, r: 0.12, ax: 0.695, ay: 0.795 }
+        "Protection & Restoration":      { cx: 0.13, cy: 0.72, r: 0.10, ax: 0.15, ay: 0.85 },
+        "Livelihoods & Sustainable Use": { cx: 0.29, cy: 0.42, r: 0.10, ax: 0.31, ay: 0.56 },
+        "Pollution & Plastics":          { cx: 0.48, cy: 0.33, r: 0.10, ax: 0.48, ay: 0.47 },
+        "Adaptation & Resilience":       { cx: 0.70, cy: 0.35, r: 0.11, ax: 0.70, ay: 0.50 },
+        "Governance & Policy":           { cx: 0.86, cy: 0.72, r: 0.10, ax: 0.86, ay: 0.85 }
+      }
+    },
+    "Regenerative Landscapes": {
+      letter: "B", src: "./characters/subzone-b.png", aspect: 1.326,
+      nodeArea: { x: 0.40, y: 0.67 },
+      zones: {
+        "Community Forestry & Stewardship": { cx: 0.18, cy: 0.30, r: 0.14, ax: 0.18, ay: 0.44 },
+        "Land Rights & Tenure":             { cx: 0.42, cy: 0.24, r: 0.14, ax: 0.44, ay: 0.37 },
+        "Landscape Restoration":            { cx: 0.66, cy: 0.30, r: 0.13, ax: 0.635, ay: 0.39 },
+        "Regenerative Agriculture":         { cx: 0.78, cy: 0.55, r: 0.12, ax: 0.705, ay: 0.565 },
+        "Just Transition":                  { cx: 0.74, cy: 0.80, r: 0.12, ax: 0.695, ay: 0.795 }
+      }
+    },
+    "Inclusive Communities": {
+      letter: "C", src: "./characters/subzone-c.png", aspect: 1.434,
+      nodeArea: { x: 0.58, y: 0.80 },
+      zones: {
+        "Health & Wellbeing":              { cx: 0.16, cy: 0.72, r: 0.13, ax: 0.215, ay: 0.88 },
+        "Protection & Safety":             { cx: 0.32, cy: 0.45, r: 0.13, ax: 0.30, ay: 0.60 },
+        "Livelihoods & Economic Mobility": { cx: 0.52, cy: 0.32, r: 0.13, ax: 0.50, ay: 0.48 },
+        "Youth & Agency":                  { cx: 0.78, cy: 0.30, r: 0.14, ax: 0.76, ay: 0.46 }
+      }
+    },
+    "Cultural Narratives": {
+      letter: "D", src: "./characters/subzone-d.png", aspect: 1.765,
+      nodeArea: { x: 0.455, y: 0.97 },
+      zones: {
+        "Arts for Change":           { cx: 0.15, cy: 0.50, r: 0.12, ax: 0.15, ay: 0.66 },
+        "Narratives & Storytelling": { cx: 0.38, cy: 0.35, r: 0.12, ax: 0.38, ay: 0.50 },
+        "Creative Ecosystems":       { cx: 0.62, cy: 0.42, r: 0.12, ax: 0.62, ay: 0.57 },
+        "Movement Building":         { cx: 0.80, cy: 0.70, r: 0.11, ax: 0.80, ay: 0.84 }
       }
     }
   };
-
-  const SUBZONE_DIM = 0.16; // resting opacity of the sub-zone layer (full = 1 when soloed)
 
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -739,6 +761,9 @@ async function _2(FileAttachment,d3)
     // Stays at its fixed corner on load; once dragged, this overrides the
     // corner target and the badge stays wherever it's dropped.
     let badgeOverride = null;
+    let soloBadgeScale = 1;      // grows to 1.5 while this theme is soloed
+    let zoneAnchorsRef = null;   // this theme's sub-zone blobs (for the badge line)
+    let badgeConnector = null;   // bent line: badge -> closest sub-zone blob edge
 
     // Badge renders here, before `inner` — so nodes/lines paint on top of
     // it wherever they overlap. Still draggable from any part of the badge
@@ -804,7 +829,7 @@ async function _2(FileAttachment,d3)
     let detailControls = null; // live tuning of attach points + node area (art)
     const detailGroup = detailLayer.append("g")
       .attr("class", "detail-map")
-      .style("opacity", SUBZONE_DIM);
+      .style("opacity", 1);
     (function renderDetail() {
       const zones = SUBZONES[chart.id] || [];
       const realNodes = nodes.filter(hasCard);
@@ -816,7 +841,7 @@ async function _2(FileAttachment,d3)
       const gcy = y + layout.panelH / 2 + outY * layout.panelH * 1.18;
       const ringR = base * 0.34;
       const blobR = base * 0.16;
-      const iconR = base * 0.033;               // 40% smaller than before
+      const iconR = 12;                          // fixed 24x24 node icons
       const conns = CONNECTIONS[chart.id] || {};
 
       const art = SUBZONE_ART[chart.id];
@@ -826,20 +851,30 @@ async function _2(FileAttachment,d3)
       // connectors, and a hit radius r.
       let imgBox = null;
       let zoneAnchors;
-      const isRegenArt = art && chart.id === "Regenerative Landscapes";
+      const artL = art ? art.letter : null;
       if (art) {
         const imgW = base * 1.7, imgH = imgW / art.aspect;
         const imgX = gcx - imgW / 2, imgY = gcy - imgH * 0.6;
         imgBox = { x: imgX, y: imgY, w: imgW, h: imgH };
+        // Bent line linking this theme's badge to the closest sub-zone blob
+        // edge. Same dotted look + cubic bend as the in-zone connectors; badge
+        // end + endpoint recomputed in render(). Lives in detailGroup (global
+        // coords, like the artwork).
+        badgeConnector = detailGroup.append("path")
+          .attr("class", "badge-connector").attr("fill", "none")
+          .attr("stroke", chart.color).attr("stroke-opacity", 1)
+          .attr("stroke-width", base * 0.008).attr("stroke-linecap", "round")
+          .attr("stroke-dasharray", `0.1 ${base * 0.014}`);
         zoneAnchors = zones.map((z, i) => {
           const g = art.zones[z.name] || { cx: 0.5, cy: 0.3, r: 0.12, ax: 0.5, ay: 0.42 };
-          // Attach points are UI-tunable for Regen (settings azBx/azBy).
-          const axf = isRegenArt ? settings[`azBx${i}`] : undefined;
-          const ayf = isRegenArt ? settings[`azBy${i}`] : undefined;
+          // Attach points are UI-tunable per theme (settings sz<L>ax/ay<i>).
+          const axf = settings[`sz${artL}ax${i}`];
+          const ayf = settings[`sz${artL}ay${i}`];
           return { name: z.name, index: i,
             x: imgX + g.cx * imgW, y: imgY + g.cy * imgH,
             ax: imgX + (axf ?? g.ax) * imgW, ay: imgY + (ayf ?? g.ay) * imgH, r: g.r * imgW };
         });
+        zoneAnchorsRef = zoneAnchors;
       } else {
         zoneAnchors = zones.map((z, i) => {
           const t = zones.length === 1 ? 0.5 : i / (zones.length - 1);
@@ -853,8 +888,9 @@ async function _2(FileAttachment,d3)
 
       // Where the free nodes cluster: the lower-left "Node Area" of the artwork
       // when we have art, else a band below the drawn arc.
-      const nodeAreaX = art ? imgBox.x + imgBox.w * (isRegenArt ? settings.naBx : 0.15) : gcx;
-      const nodeAreaY = art ? imgBox.y + imgBox.h * (isRegenArt ? settings.naBy : 0.98) : gcy + blobR * 2.6;
+      const naxDef = art?.nodeArea?.x ?? 0.35, nayDef = art?.nodeArea?.y ?? 0.9;
+      const nodeAreaX = art ? imgBox.x + imgBox.w * (settings[`sz${artL}nax`] ?? naxDef) : gcx;
+      const nodeAreaY = art ? imgBox.y + imgBox.h * (settings[`sz${artL}nay`] ?? nayDef) : gcy + blobR * 2.6;
 
       // Free node copies (independent of the master's simulation), seeded near
       // the node area.
@@ -914,8 +950,8 @@ async function _2(FileAttachment,d3)
       }
       const linkSel = connectorG.selectAll("path").data(links).join("path")
         .attr("fill", "none").attr("stroke", chart.color).attr("stroke-opacity", 0.5)
-        .attr("stroke-width", base * 0.008).attr("stroke-linecap", "round")
-        .attr("stroke-dasharray", `0.1 ${base * 0.022}`);
+        .attr("stroke-width", base * 0.005).attr("stroke-linecap", "round")
+        .attr("stroke-dasharray", `0.1 ${base * 0.012}`);
 
       // Invisible per-zone hit targets over the artwork; hovering highlights
       // that zone's connectors.
@@ -937,7 +973,9 @@ async function _2(FileAttachment,d3)
         .attr("preserveAspectRatio", "xMidYMid meet");
       nodeSel.append("foreignObject").attr("x", -base * 0.08).attr("y", iconR)
         .attr("width", base * 0.16).attr("height", base * 0.1).style("overflow", "visible").style("pointer-events", "none")
-        .append("xhtml:div").attr("class", "detail-node-label").html(d => esc(d.label || d.id));
+        .append("xhtml:div").attr("class", "detail-node-label")
+        .style("font-size", settings.nodeLabelFontSize + "px")   // match the master node labels
+        .html(d => esc(d.label || d.id));
       nodeSel.each(function(d) {
         const g = d3.select(this);
         const cardFO = g.append("foreignObject")
@@ -945,7 +983,9 @@ async function _2(FileAttachment,d3)
           .attr("width", card.w).attr("height", card.h * 1.7)
           .style("overflow", "visible").style("opacity", 0).style("pointer-events", "none");
         cardFO.append("xhtml:div").html(cardHTML(d, chart));
-        g.on("mouseenter", () => cardFO.interrupt().transition().duration(140).style("opacity", 1))
+        // Raise the whole node to the top of the detail map on hover so its
+        // info card paints above every other node/label (SVG has no z-index).
+        g.on("mouseenter", () => { g.raise(); cardFO.interrupt().transition().duration(140).style("opacity", 1); })
          .on("mouseleave", () => cardFO.interrupt().transition().duration(140).style("opacity", 0));
       });
 
@@ -1000,6 +1040,9 @@ async function _2(FileAttachment,d3)
       // Live tuning hooks used by the settings panel.
       if (art) {
         detailControls = {
+          letter: artL,
+          art,
+          zoneNames: zones.map(z => z.name),
           setAttach(i, xf, yf) {
             const za = zoneAnchors[i];
             if (!za) return;
@@ -1291,7 +1334,26 @@ async function _2(FileAttachment,d3)
       const badgeX = titleState.x - badgeW / 2;
       const badgeY = titleState.y - badgeH / 2;
 
-      titleBadge.attr("transform", `translate(${badgeX},${badgeY})`);
+      // Scale about the badge centre so it grows in place when soloed.
+      titleBadge.attr("transform",
+        `translate(${titleState.x},${titleState.y}) scale(${soloBadgeScale}) translate(${-badgeW / 2},${-badgeH / 2})`);
+
+      // Bent connector from the badge (global coords) to the closest edge of
+      // the nearest sub-zone blob. Cubic with vertical tangents, matching the
+      // in-zone connectors (see connPath in renderDetail).
+      if (badgeConnector && zoneAnchorsRef && zoneAnchorsRef.length) {
+        const bx = x + titleState.x, by = y + titleState.y;
+        let best = zoneAnchorsRef[0], bestD = Infinity;
+        for (const za of zoneAnchorsRef) {
+          const d = Math.hypot(za.x - bx, za.y - by) - za.r; // distance to blob edge
+          if (d < bestD) { bestD = d; best = za; }
+        }
+        const dx = bx - best.x, dy = by - best.y, len = Math.hypot(dx, dy) || 1;
+        const ex = best.x + (dx / len) * best.r; // point on the blob edge, facing the badge
+        const ey = best.y + (dy / len) * best.r;
+        const my = (by + ey) / 2;
+        badgeConnector.attr("d", `M${bx},${by}C${bx},${my} ${ex},${my} ${ex},${ey}`);
+      }
 
       title
         .attr("x", badgeX + badgeW / 2)
@@ -1503,6 +1565,21 @@ async function _2(FileAttachment,d3)
       refreshNodeLabels,
       setEmphasis,
       clearEmphasis,
+      setBadgeScale(s) { soloBadgeScale = s; render(); },
+      // Focus dimming when a badge is clicked:
+      //  'off'     -> overview, everything at full opacity
+      //  'focused' -> this soloed theme: master content dims, but the badge
+      //               and its sub-zone detail map stay bright
+      //  'dim'     -> a non-focused theme: content, badge and detail all dim
+      setFocus(state) {
+        const DIM = 0.12;
+        inner.interrupt().transition().duration(500)
+          .style("opacity", state === "off" ? 1 : DIM);
+        titleLayer.interrupt().transition().duration(500)
+          .style("opacity", state === "dim" ? DIM : 1);
+        detailGroup.interrupt().transition().duration(600)
+          .style("opacity", state === "dim" ? DIM : 1);
+      },
       x0: x,
       y0: y
     };
@@ -1895,8 +1972,14 @@ async function _2(FileAttachment,d3)
   let zoomMoved = false;
   zoom.on("start.pinclear", () => { zoomMoved = false; })
       .on("zoom.pinclear", (event) => { if (event.sourceEvent) zoomMoved = true; });
-  svg.on("click.pinclear", () => {
+  svg.on("click.pinclear", (event) => {
     if (zoomMoved) { zoomMoved = false; return; }
+    // A click that reaches the bare canvas (target is the svg itself — nodes,
+    // badges, blob hit-targets all stopPropagation) returns to the master
+    // overview when we're currently focused on a theme.
+    if (event.target === svg.node() && currentChrome !== "master") {
+      exitSolo();
+    }
     if (pinned) {
       const prev = pinned.nodeId;
       pinned = null;
@@ -1963,6 +2046,8 @@ async function _2(FileAttachment,d3)
   // (or Esc, or the soloed badge again) returns. Reuses the existing zoom —
   // the richer per-theme detail maps (in Figma) are a later phase.
   let soloedIndex = null;
+  let currentChrome = null; // which theme (or "master") the header/legend show
+  let showTune = () => {}; // assigned when the settings panel is built
 
   // Fit transform that pans + zooms to a theme's detail map (which lives
   // outside the master, see makePanel).
@@ -1977,28 +2062,26 @@ async function _2(FileAttachment,d3)
       .scale(k);
   }
 
+  // Clicking a badge is now just a shortcut: zoom to that theme's detail map.
+  // The chrome + tune panel follow via updateChromeForView / setChrome below,
+  // and the detail maps stay at full opacity the whole time.
   function soloPanel(index) {
     soloedIndex = index;
     svg.transition().duration(750).call(zoom.transform, detailFitTransform(index));
-    // Recede the whole master; light up this theme's detail map, keep the
-    // others faint.
     panels.forEach((p, i) => {
-      p.root.interrupt().transition().duration(500).style("opacity", 0.12);
-      p.detailGroup.interrupt().transition().duration(600)
-        .style("opacity", i === index ? 1 : SUBZONE_DIM);
+      p.setBadgeScale(i === index ? 1.5 : 1);
+      p.setFocus(i === index ? "focused" : "dim");
     });
     setChrome(charts[index].id);
+    showTune(panels[index]);
   }
 
   function exitSolo() {
-    if (soloedIndex === null) return;
     soloedIndex = null;
     svg.transition().duration(750).call(zoom.transform, overviewTransform);
-    panels.forEach(p => {
-      p.root.interrupt().transition().duration(500).style("opacity", 1);
-      p.detailGroup.interrupt().transition().duration(600).style("opacity", SUBZONE_DIM);
-    });
+    panels.forEach(p => { p.setBadgeScale(1); p.setFocus("off"); });
     setChrome("master");
+    showTune(null);
   }
 
   d3.select(window).on("keydown.solo", (event) => {
@@ -2034,29 +2117,22 @@ async function _2(FileAttachment,d3)
     .subzone-label .sz-desc { font-size: 7.5px; line-height: 1.25; opacity: .9; }
     .detail-node-label { font-family: poppins, system-ui, sans-serif; font-size: 8px; font-weight: 600; color: #334155; text-align: center; line-height: 1.15; pointer-events: none; }
 
-    /* Header speech bubble (top-left). --hbg is set per-view so the tail
-       matches the bubble colour. */
+    /* Header speech bubble (top-left) — now a pre-rendered art bubble
+       (TheECCAsystem-bubble / entry-bubble-A..D). The "← Overview" back link
+       sits as a pill ABOVE the entry bubble in theme view. */
     .ecca-header {
-      position: fixed; left: 20px; top: 20px; z-index: 9; max-width: 320px;
-      background: var(--hbg, #D6EDD3); color: #003932;
-      border-radius: 30px 30px 30px 12px;
-      padding: 18px 22px; box-shadow: 0 4px 20px rgba(0,0,0,0.10);
-      transition: background .4s ease, color .4s ease;
+      position: fixed; left: 20px; top: 20px; z-index: 9;
+      display: flex; flex-direction: column; align-items: flex-start;
     }
-    .ecca-header::after {
-      content: ""; position: absolute; bottom: -16px; left: 46px;
-      width: 0; height: 0; border-left: 26px solid transparent; border-right: 0;
-      border-top: 22px solid var(--hbg, #D6EDD3); transition: border-top-color .4s ease;
+    .ecca-header-img { display: block; width: 300px; max-width: 42vw; height: auto;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,0.12)); }
+    .ecca-header .ecca-back {
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      background: #003932; color: #F2F1ED; padding: 7px 15px 7px 12px;
+      border-radius: 20px; margin-bottom: 10px; display: inline-flex; align-items: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.16); transition: transform .15s ease, background .2s ease;
     }
-    .ecca-header .ecca-back { cursor: pointer; font-size: 12px; font-weight: 600; opacity: .85; margin-bottom: 8px; display: inline-block; }
-    .ecca-header .ecca-back:hover { opacity: 1; }
-    /* Logo straddles the top edge of the bubble (master view only). */
-    .ecca-header.has-logo { padding-top: 48px; }
-    .ecca-header .ecca-logo-img { position: absolute; top: -26px; left: 18px; width: 184px; height: auto; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.16)); }
-    .ecca-header .ep-pill { display: inline-block; background: rgba(255,255,255,.85); color: #3a4a2a; font-weight: 700; font-size: 12px; padding: 3px 10px; border-radius: 6px; margin-bottom: 8px; }
-    .ecca-header .kicker { font-family: gelica, Georgia, serif; font-size: 23px; font-weight: 700; margin-bottom: 6px; }
-    .ecca-header .title { font-size: 26px; font-weight: 800; line-height: 1.06; margin-bottom: 8px; }
-    .ecca-header .body { font-size: 13px; line-height: 1.45; opacity: .92; }
+    .ecca-header .ecca-back:hover { background: #005F57; transform: translateX(-2px); }
 
     /* Bottom-left link out to the full annual report page. */
     .ecca-report {
@@ -2069,56 +2145,52 @@ async function _2(FileAttachment,d3)
     }
     .ecca-report:hover { background: #fff; transform: translateY(-1px); }
 
-    /* Bottom-right stack: How-to-Explore bubble over the legend + character. */
+    /* Bottom-right stack: How-to-Explore art bubble over the legend + character. */
     .ecca-br { position: fixed; right: 20px; bottom: 20px; z-index: 9; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .ecca-explore {
-      position: relative; max-width: 264px; margin-right: 34px;
-      background: #D6EDD3; color: #005F57; border-radius: 26px 26px 26px 10px;
-      padding: 14px 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.10);
-    }
-    .ecca-explore::after {
-      content: ""; position: absolute; bottom: -13px; right: 40px;
-      width: 0; height: 0; border-right: 22px solid transparent; border-left: 0;
-      border-top: 19px solid #D6EDD3;
-    }
-    .ecca-explore h3 { font-family: gelica, Georgia, serif; margin: 0 0 6px; font-size: 20px; font-weight: 700; line-height: 1.1; }
-    .ecca-explore p { margin: 0; font-size: 12px; line-height: 1.4; }
+    .ecca-explore { margin-right: 34px; }
+    .ecca-explore-img { display: block; width: 230px; max-width: 40vw; height: auto;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,0.10)); }
 
     .ecca-legend-row { display: flex; flex-direction: row; align-items: flex-end; gap: 0; }
+    .ecca-char-wrap { position: relative; display: inline-flex; align-self: flex-end; margin-left: -18px; }
     .ecca-character {
       height: 170px; width: auto; cursor: pointer; user-select: none;
-      margin-left: -18px; align-self: flex-end;
       filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12));
       transition: transform .2s ease;
     }
     .ecca-character:hover { transform: translateY(-2px); }
-    .ecca-legend {
-      background: #003932; color: #eef2ea; border-radius: 16px;
-      padding: 12px 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.22); font-size: 12px;
+    /* Hover popover pointing at the character. */
+    .ecca-char-tip {
+      position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(-4px);
+      background: #003932; color: #F2F1ED; font-size: 12px; font-weight: 600;
+      padding: 6px 12px; border-radius: 14px; white-space: nowrap;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.18);
+      opacity: 0; pointer-events: none; transition: opacity .18s ease; z-index: 10;
     }
+    .ecca-char-tip::after {
+      content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      border: 6px solid transparent; border-top-color: #003932;
+    }
+    .ecca-char-wrap:hover .ecca-char-tip { opacity: 1; }
+    /* Legend is now a pre-rendered image, swapped by view (master/theme) and
+       viewport (desktop/mobile). */
+    .ecca-legend { align-self: flex-end; }
     .ecca-legend.collapsed { display: none; }
-    .ecca-legend .legend-sections { display: flex; flex-direction: column; gap: 12px; }
-    .ecca-legend h4 { margin: 0 0 8px; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; opacity: .8; }
-    .ecca-legend .row { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; white-space: nowrap; }
-    .ecca-legend .swatch { width: 16px; height: 16px; border-radius: 50%; flex: none; }
-    .ecca-legend .ico { flex: none; }
-    .ecca-legend .pill { font-size: 10px; font-weight: 600; padding: 2px 9px; border-radius: 5px; flex: none; background: rgba(214,237,211,0.14); color: #D6EDD3; }
+    .ecca-legend-img { display: block; height: auto;
+      filter: drop-shadow(0 6px 24px rgba(0,0,0,0.18)); }
+    .ecca-legend-desktop { width: 300px; max-width: 30vw; }
+    .ecca-legend-mobile { display: none; }
 
-    /* Mobile: scale the character up, lay the legend out horizontally, and
-       size the bubbles for a small screen. */
+    /* Mobile: bigger bubbles, character shrinks, and the wide mobile legend
+       image stacks below the character. */
     @media (max-width: 768px) {
-      .ecca-character { height: 250px; margin-left: -28px; }
-      .ecca-legend { font-size: 15px; padding: 16px 20px; }
-      .ecca-legend .legend-sections { flex-direction: row; gap: 26px; }
-      .ecca-legend h4 { font-size: 12px; }
-      .ecca-header { max-width: 66vw; }
-      .ecca-header .title { font-size: 30px; }
-      .ecca-header .kicker { font-size: 28px; }
-      .ecca-header .ecca-logo-img { width: 220px; }
-      .ecca-header .body { font-size: 15px; }
-      .ecca-explore { max-width: 300px; }
-      .ecca-explore h3 { font-size: 22px; }
-      .ecca-explore p { font-size: 14px; }
+      .ecca-legend-row { flex-direction: column; align-items: flex-end; gap: 8px; }
+      .ecca-char-wrap { margin-left: 0; }
+      .ecca-character { height: 150px; }
+      .ecca-legend-desktop { display: none; }
+      .ecca-legend-mobile { display: block; width: 92vw; max-width: 560px; }
+      .ecca-header-img { width: 300px; max-width: 62vw; }
+      .ecca-explore-img { width: 260px; max-width: 52vw; }
     }
   `);
 
@@ -2154,98 +2226,79 @@ async function _2(FileAttachment,d3)
   };
 
   const bottomRight = d3.create("div").attr("class", "ecca-br ecca-chrome");
-  const exploreBubble = bottomRight.append("div").attr("class", "ecca-explore")
-    .html(`<h3>How to Explore The ECCAsystem</h3><p>Hover, Click, Pan, Zoom to interact with the map. See the legend as reference.</p>`);
+  const exploreBubble = bottomRight.append("div").attr("class", "ecca-explore");
+  exploreBubble.append("img").attr("class", "ecca-explore-img")
+    .attr("src", "./characters/how-to-explore.svg").attr("alt", "How to explore The ECCAsystem");
   const legendRow = bottomRight.append("div").attr("class", "ecca-legend-row");
   const legendPanel = legendRow.append("div").attr("class", "ecca-legend ecca-chrome");
-  const legendBody = legendPanel.append("div").attr("class", "ecca-legend-body");
-  const characterImg = legendRow.append("img").attr("class", "ecca-character").attr("alt", "");
+  // Two legend images: one for desktop, one for the wide mobile layout. Their
+  // src is swapped per-view (master vs entry point) in setChrome; CSS media
+  // query decides which is visible.
+  const legendDesktop = legendPanel.append("img").attr("class", "ecca-legend-img ecca-legend-desktop").attr("alt", "Legend");
+  const legendMobile = legendPanel.append("img").attr("class", "ecca-legend-img ecca-legend-mobile").attr("alt", "Legend");
+  // Character doubles as the legend toggle; a small popover hints at that.
+  const charWrap = legendRow.append("div").attr("class", "ecca-char-wrap");
+  charWrap.append("div").attr("class", "ecca-char-tip").text("Click to toggle legend");
+  const characterImg = charWrap.append("img").attr("class", "ecca-character").attr("alt", "")
+    .attr("title", "Click to toggle legend");
   characterImg.on("click", () => {
     legendPanel.classed("collapsed", !legendPanel.classed("collapsed"));
   });
 
-  // Inline arrow icon — single- or double-headed — for the Arrow Color Key.
-  function arrowIcon(color, double) {
-    const w = 28, h = 12, y = 6, x2 = w - 4, x1 = double ? 8 : 2;
-    const rHead = `<path d="M${x2} ${y} l-6 -4 M${x2} ${y} l-6 4" stroke="${color}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
-    const lHead = double ? `<path d="M6 ${y} l6 -4 M6 ${y} l6 4" stroke="${color}" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` : "";
-    return `<svg class="ico" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/>${lHead}${rHead}</svg>`;
-  }
-  // The blue -> peach curved "Cross Connection" arrow from the master legend.
-  function crossConnIcon() {
-    return `<svg class="ico" width="118" height="30" viewBox="0 0 118 30"><defs><linearGradient id="ccg" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="${PAL.blue}"/><stop offset="1" stop-color="${PAL.peach}"/></linearGradient></defs><path d="M6 22 Q58 0 108 14" stroke="url(#ccg)" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="6" cy="22" r="3.6" fill="${PAL.blue}"/><path d="M108 14 l-9 -1.5 M108 14 l-6.5 6" stroke="${PAL.peach}" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  }
-
-  function legendMasterHTML() {
-    const zones = ["Pilot", "Validate", "Build", "Scale"];
-    const descs = ["First test", "Building evidence", "Strengthening capacity", "Expanding reach"];
-    return `
-      <div class="legend-sections">
-        <div class="legend-section">
-          <h4>4 Entry Point Zones</h4>
-          ${zones.map((n, i) => `<div class="row"><span class="pill">${n}</span><span>${descs[i]}</span></div>`).join("")}
-        </div>
-        <div class="legend-section">
-          <h4>Legends</h4>
-          <div class="row">${crossConnIcon()}<span>Cross Connection</span></div>
-        </div>
-      </div>
-    `;
-  }
-  function legendThemeHTML() {
-    const arrows = [
-      ["Feedback &amp; learning loop", PAL.yellow, true],
-      ["Resource &amp; knowledge flow", PAL.lightGreen, false],
-      ["Community-driven change", PAL.midPlum, false]
-    ];
-    const areas = [
-      ["Frontline &amp; Communities", PAL.pink],
-      ["Science &amp; Evidence", PAL.yellow],
-      ["Markets &amp; Finance", PAL.midKhaki],
-      ["Network &amp; Policy", PAL.lightKhaki]
-    ];
-    return `
-      <div class="legend-sections">
-        <div class="legend-section">
-          <h4>Arrow Color Key</h4>
-          ${arrows.map(([n, c, d]) => `<div class="row">${arrowIcon(c, d)}<span>${n}</span></div>`).join("")}
-        </div>
-        <div class="legend-section">
-          <h4>Areas of Work</h4>
-          ${areas.map(([n, c]) => `<div class="row"><span class="swatch" style="background:${c}"></span><span>${n}</span></div>`).join("")}
-        </div>
-      </div>
-    `;
-  }
+  // Pre-rendered legend art, swapped by view + viewport in setChrome.
+  const LEGEND_ART = {
+    masterDesktop: "./characters/Desktop-Legend-Master.png",
+    themeDesktop:  "./characters/Desktop-Legend-EntryPoint.png",
+    masterMobile:  "./characters/legend-mobile-master.png",
+    themeMobile:   "./characters/Mobile-Legend-EntryPoint.png"
+  };
 
   function setChrome(mode) {
+    if (mode === currentChrome) return; // already showing this view's chrome
+    currentChrome = mode;
     if (mode === "master") {
-      headerBlob.classed("has-logo", true).style("--hbg", "#D6EDD3").style("color", "#003932");
-      headerInner.html(`
-        <img class="ecca-logo-img" src="./characters/logo.svg" alt="The ECCAsystem">
-        <div class="kicker">How Change Moves</div>
-        <div class="body">What you're looking at isn't a portfolio map. It's a snapshot of relationships in motion.</div>
-      `);
+      // Master header is the standalone "The ECCAsystem" art bubble.
+      headerInner.html(`<img class="ecca-header-img" src="./characters/TheECCAsystem-bubble.svg" alt="The ECCAsystem">`);
       characterImg.attr("src", CHARACTERS.master);
-      legendBody.html(legendMasterHTML());
+      legendDesktop.attr("src", LEGEND_ART.masterDesktop);
+      legendMobile.attr("src", LEGEND_ART.masterMobile);
     } else {
-      const chart = charts.find(c => c.id === mode);
-      const letter = ENTRY_POINTS[mode] || "";
-      const tagline = THEME_TAGLINES[mode] || "";
-      headerBlob.classed("has-logo", false).style("--hbg", chart.color).style("color", "#f4f1e8");
+      const letter = (ENTRY_POINTS[mode] || "").toLowerCase();
+      // Theme header: a "← Overview" pill above the entry-point art bubble.
       headerInner.html(`
-        <div style="display: flex; flex-direction: column;">
         <div class="ecca-back">← Overview</div>
-        <div class="ep-pill">Entry Point ${letter}</div></div>
-        <div class="title">${mode}</div>
-        <div class="body">${tagline}</div>
+        <img class="ecca-header-img" src="./characters/entry-bubble-${letter}.svg" alt="Entry Point ${letter.toUpperCase()} — ${mode}">
       `);
       headerInner.select(".ecca-back").on("click", exitSolo);
       characterImg.attr("src", CHARACTERS[mode] || CHARACTERS.master);
-      legendBody.html(legendThemeHTML());
+      legendDesktop.attr("src", LEGEND_ART.themeDesktop);
+      legendMobile.attr("src", LEGEND_ART.themeMobile);
     }
   }
   setChrome("master");
+
+  // Follow the pan: whichever theme's detail map the viewport is centered over
+  // takes over the header bubble + legend (and the dev tune panel). Panning
+  // back over the master in the middle restores the master chrome. Only reacts
+  // to user-driven pans/zooms (programmatic transforms have a null sourceEvent).
+  function updateChromeForView(transform) {
+    const [cx, cy] = transform.invert([viewportW / 2, viewportH / 2]);
+    let best = -1, bestDist = Infinity;
+    panels.forEach((p, i) => {
+      if (!p.detailCenter) return;
+      const d = Math.hypot(p.detailCenter.x - cx, p.detailCenter.y - cy);
+      if (d < bestDist) { bestDist = d; best = i; }
+    });
+    const focused = best >= 0 && bestDist < panels[best].detailExtent * 1.2;
+    const target = focused ? charts[best].id : "master";
+    if (target !== currentChrome) {
+      setChrome(target);
+      showTune(focused ? panels[best] : null);
+    }
+  }
+  zoom.on("zoom.chrome", (event) => {
+    if (event.sourceEvent) updateChromeForView(event.transform);
+  });
 
   // Small dev-facing settings panel — bottom right, collapsed by default —
   // for tweaking the contour/label tuning knobs live without editing code.
@@ -2364,16 +2417,17 @@ async function _2(FileAttachment,d3)
   addDeferredSettingSlider("Max panel-cluster width (% of screen)", "maxContentWPct", 20, 100, 1);
   addDeferredSettingSlider("Max panel-cluster height (% of screen)", "maxContentHPct", 20, 100, 1);
 
-  // Live sub-zone tuning (Regen art): attach points + Node Area. Applies
-  // immediately (no reload) via the panel's detailControls.
-  function addLiveSlider(label, key, min, max, step, apply) {
-    const row = settingsBody.append("div").style("margin-bottom", "10px");
+  // Live sub-zone tuning — rebuilt for whichever theme is soloed (see the
+  // solo hooks below). Applies immediately (no reload) via detailControls.
+  function addLiveSlider(container, label, key, defVal, apply, max = 1) {
+    const val = settings[key] ?? defVal;
+    const row = container.append("div").style("margin-bottom", "10px");
     const header = row.append("div").style("display", "flex")
       .style("justify-content", "space-between").style("margin-bottom", "4px");
     header.append("span").text(label);
-    const valueLabel = header.append("span").style("color", "#6b7280").text(settings[key]);
-    row.append("input").attr("type", "range").attr("min", min).attr("max", max).attr("step", step)
-      .property("value", settings[key]).style("width", "100%")
+    const valueLabel = header.append("span").style("color", "#6b7280").text(val);
+    row.append("input").attr("type", "range").attr("min", 0).attr("max", max).attr("step", 0.005)
+      .property("value", val).style("width", "100%")
       .on("input", function () {
         settings[key] = +this.value;
         valueLabel.text(this.value);
@@ -2381,21 +2435,28 @@ async function _2(FileAttachment,d3)
         saveSettings();
       });
   }
-  const artPanel = panels.find(p => p.detailControls);
-  if (artPanel) {
-    const dc = artPanel.detailControls;
-    settingsBody.append("div").style("margin", "6px 0 8px").style("border-top", "1px solid #eee");
-    settingsBody.append("div").style("font-weight", "700").style("margin-bottom", "6px")
-      .text("Regen sub-zones (live)");
-    (SUBZONES["Regenerative Landscapes"] || []).forEach((z, i) => {
-      const applyAttach = () => dc.setAttach(i, settings[`azBx${i}`], settings[`azBy${i}`]);
-      addLiveSlider(`${z.name} — attach X`, `azBx${i}`, 0, 1, 0.005, applyAttach);
-      addLiveSlider(`${z.name} — attach Y`, `azBy${i}`, 0, 1, 0.005, applyAttach);
+  const tuneContainer = settingsBody.append("div");
+  // Rebuild the tuning sliders for the currently-soloed theme.
+  showTune = (panel) => {
+    tuneContainer.selectAll("*").remove();
+    const dc = panel && panel.detailControls;
+    if (!dc) return;
+    const L = dc.letter, art = dc.art, defZones = art.zones;
+    tuneContainer.append("div").style("margin", "6px 0 8px").style("border-top", "1px solid #eee");
+    tuneContainer.append("div").style("font-weight", "700").style("margin-bottom", "6px")
+      .text(`Sub-zones — ${panel.chart.id} (live)`);
+    dc.zoneNames.forEach((zn, i) => {
+      const g = defZones[zn] || { ax: 0.5, ay: 0.5 };
+      const applyAttach = () => dc.setAttach(i, settings[`sz${L}ax${i}`] ?? g.ax, settings[`sz${L}ay${i}`] ?? g.ay);
+      addLiveSlider(tuneContainer, `${zn} — attach X`, `sz${L}ax${i}`, g.ax, applyAttach);
+      addLiveSlider(tuneContainer, `${zn} — attach Y`, `sz${L}ay${i}`, g.ay, applyAttach);
     });
-    const applyNodeArea = () => dc.setNodeArea(settings.naBx, settings.naBy);
-    addLiveSlider("Node Area X", "naBx", 0, 1, 0.005, applyNodeArea);
-    addLiveSlider("Node Area Y", "naBy", 0, 1, 0.005, applyNodeArea);
-  }
+    const applyNodeArea = () => dc.setNodeArea(settings[`sz${L}nax`] ?? art.nodeArea.x, settings[`sz${L}nay`] ?? art.nodeArea.y);
+    // Node Area can push past the artwork bounds (fraction of the image
+    // width/height), so allow up to 2× — useful for dropping the cluster below.
+    addLiveSlider(tuneContainer, "Node Area X", `sz${L}nax`, art.nodeArea.x, applyNodeArea, 2);
+    addLiveSlider(tuneContainer, "Node Area Y", `sz${L}nay`, art.nodeArea.y, applyNodeArea, 2);
+  };
 
   const reloadHint = settingsBody.append("button")
     .text("Reload to apply size change")
