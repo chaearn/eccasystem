@@ -982,27 +982,33 @@ async function _2(FileAttachment,d3)
       nodeSel.append("image").attr("href", d => d.icon).attr("xlink:href", d => d.icon)
         .attr("x", -iconR).attr("y", -iconR).attr("width", iconR * 2).attr("height", iconR * 2)
         .attr("preserveAspectRatio", "xMidYMid meet");
-      nodeSel.append("foreignObject").attr("x", -base * 0.08).attr("y", iconR)
+      nodeSel.append("foreignObject").attr("class", "node-label-fo").attr("x", -base * 0.08).attr("y", iconR)
         .attr("width", base * 0.16).attr("height", base * 0.1).style("overflow", "visible").style("pointer-events", "none")
         .append("xhtml:div").attr("class", "detail-node-label")
         .style("font-size", settings.nodeLabelFontSize + "px")   // match the master node labels
         .html(d => esc(d.label || d.id));
       nodeSel.each(function(d) {
         const g = d3.select(this);
+        const labelFO = g.select("foreignObject.node-label-fo");
+        // Info card sits centered directly under the node (replacing the id
+        // label, which hides on hover).
         const cardFO = g.append("foreignObject")
-          .attr("x", -card.w - iconR * 1.4).attr("y", -card.h * 0.5)
+          .attr("x", -card.w / 2).attr("y", iconR)
           .attr("width", card.w).attr("height", card.h * 1.7)
           .style("overflow", "visible").style("opacity", 0).style("pointer-events", "none");
         cardFO.append("xhtml:div").html(cardHTML(d, chart));
         // Raise the whole node to the top of the detail map on hover so its
         // info card paints above every other node/label (SVG has no z-index).
-        // Hovering also highlights this node's connectors and dims the others.
+        // Hovering hides this node's id, shows its card, highlights its
+        // connectors, and dims the other nodes.
         g.on("mouseenter", () => {
           g.raise();
+          labelFO.style("opacity", 0);
           cardFO.interrupt().transition().duration(140).style("opacity", 1);
           linkSel.attr("stroke-opacity", l => l.source === d ? 0.95 : 0.08);
           nodeSel.interrupt().transition().duration(140).style("opacity", n => n === d ? 1 : 0.2);
         }).on("mouseleave", () => {
+          labelFO.style("opacity", 1);
           cardFO.interrupt().transition().duration(140).style("opacity", 0);
           linkSel.attr("stroke-opacity", 0.5);
           nodeSel.interrupt().transition().duration(140).style("opacity", 1);
