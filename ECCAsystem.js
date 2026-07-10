@@ -647,44 +647,44 @@ async function _2(FileAttachment,d3)
   const SUBZONE_ART = {
     "Healthy Oceans": {
       letter: "A", src: "./characters/subzone-a.png", aspect: 2.233,
-      nodeArea: { x: 0.52, y: 1.125 },
+      nodeArea: { x: 0.52, y: 1.345 },
       zones: {
-        "Protection & Restoration":      { cx: 0.13, cy: 0.72, r: 0.10, ax: 0.15, ay: 0.85 },
-        "Livelihoods & Sustainable Use": { cx: 0.29, cy: 0.42, r: 0.10, ax: 0.31, ay: 0.56 },
-        "Pollution & Plastics":          { cx: 0.48, cy: 0.33, r: 0.10, ax: 0.48, ay: 0.47 },
-        "Adaptation & Resilience":       { cx: 0.70, cy: 0.35, r: 0.11, ax: 0.70, ay: 0.50 },
-        "Governance & Policy":           { cx: 0.86, cy: 0.72, r: 0.10, ax: 0.86, ay: 0.85 }
+        "Protection & Restoration":      { cx: 0.13, cy: 0.72, r: 0.10, ax: 0.195, ay: 0.855 },
+        "Livelihoods & Sustainable Use": { cx: 0.29, cy: 0.42, r: 0.10, ax: 0.35, ay: 0.565 },
+        "Pollution & Plastics":          { cx: 0.48, cy: 0.33, r: 0.10, ax: 0.51, ay: 0.42 },
+        "Adaptation & Resilience":       { cx: 0.70, cy: 0.35, r: 0.11, ax: 0.665, ay: 0.53 },
+        "Governance & Policy":           { cx: 0.86, cy: 0.72, r: 0.10, ax: 0.79, ay: 0.84 }
       }
     },
     "Regenerative Landscapes": {
       letter: "B", src: "./characters/subzone-b.png", aspect: 1.326,
-      nodeArea: { x: 0.40, y: 0.67 },
+      nodeArea: { x: 0.355, y: 0.805 },
       zones: {
-        "Community Forestry & Stewardship": { cx: 0.18, cy: 0.30, r: 0.14, ax: 0.18, ay: 0.44 },
-        "Land Rights & Tenure":             { cx: 0.42, cy: 0.24, r: 0.14, ax: 0.44, ay: 0.37 },
-        "Landscape Restoration":            { cx: 0.66, cy: 0.30, r: 0.13, ax: 0.635, ay: 0.39 },
-        "Regenerative Agriculture":         { cx: 0.78, cy: 0.55, r: 0.12, ax: 0.705, ay: 0.565 },
-        "Just Transition":                  { cx: 0.74, cy: 0.80, r: 0.12, ax: 0.695, ay: 0.795 }
+        "Community Forestry & Stewardship": { cx: 0.18, cy: 0.30, r: 0.14, ax: 0.23, ay: 0.435 },
+        "Land Rights & Tenure":             { cx: 0.42, cy: 0.24, r: 0.14, ax: 0.42, ay: 0.34 },
+        "Landscape Restoration":            { cx: 0.66, cy: 0.30, r: 0.13, ax: 0.585, ay: 0.41 },
+        "Regenerative Agriculture":         { cx: 0.78, cy: 0.55, r: 0.12, ax: 0.655, ay: 0.59 },
+        "Just Transition":                  { cx: 0.74, cy: 0.80, r: 0.12, ax: 0.64, ay: 0.75 }
       }
     },
     "Inclusive Communities": {
       letter: "C", src: "./characters/subzone-c.png", aspect: 1.434,
-      nodeArea: { x: 0.58, y: 0.80 },
+      nodeArea: { x: 0.635, y: 0.94 },
       zones: {
-        "Health & Wellbeing":              { cx: 0.16, cy: 0.72, r: 0.13, ax: 0.215, ay: 0.88 },
-        "Protection & Safety":             { cx: 0.32, cy: 0.45, r: 0.13, ax: 0.30, ay: 0.60 },
-        "Livelihoods & Economic Mobility": { cx: 0.52, cy: 0.32, r: 0.13, ax: 0.50, ay: 0.48 },
-        "Youth & Agency":                  { cx: 0.78, cy: 0.30, r: 0.14, ax: 0.76, ay: 0.46 }
+        "Health & Wellbeing":              { cx: 0.16, cy: 0.72, r: 0.13, ax: 0.28, ay: 0.76 },
+        "Protection & Safety":             { cx: 0.32, cy: 0.45, r: 0.13, ax: 0.40, ay: 0.58 },
+        "Livelihoods & Economic Mobility": { cx: 0.52, cy: 0.32, r: 0.13, ax: 0.545, ay: 0.405 },
+        "Youth & Agency":                  { cx: 0.78, cy: 0.30, r: 0.14, ax: 0.76, ay: 0.44 }
       }
     },
     "Cultural Narratives": {
       letter: "D", src: "./characters/subzone-d.png", aspect: 1.765,
-      nodeArea: { x: 0.455, y: 0.97 },
+      nodeArea: { x: 0.435, y: 1.155 },
       zones: {
-        "Arts for Change":           { cx: 0.15, cy: 0.50, r: 0.12, ax: 0.15, ay: 0.66 },
-        "Narratives & Storytelling": { cx: 0.38, cy: 0.35, r: 0.12, ax: 0.38, ay: 0.50 },
-        "Creative Ecosystems":       { cx: 0.62, cy: 0.42, r: 0.12, ax: 0.62, ay: 0.57 },
-        "Movement Building":         { cx: 0.80, cy: 0.70, r: 0.11, ax: 0.80, ay: 0.84 }
+        "Arts for Change":           { cx: 0.15, cy: 0.50, r: 0.12, ax: 0.16, ay: 0.68 },
+        "Narratives & Storytelling": { cx: 0.38, cy: 0.35, r: 0.12, ax: 0.365, ay: 0.535 },
+        "Creative Ecosystems":       { cx: 0.62, cy: 0.42, r: 0.12, ax: 0.59, ay: 0.60 },
+        "Movement Building":         { cx: 0.80, cy: 0.70, r: 0.11, ax: 0.73, ay: 0.795 }
       }
     }
   };
@@ -909,14 +909,18 @@ async function _2(FileAttachment,d3)
       // Layers, back to front: contour, connectors, artwork/blobs, hits, nodes.
       const cHalf = base * 0.72;
       const cox = nodeAreaX - cHalf, coy = nodeAreaY - cHalf;
+      // Blur the density bands so they read as a soft radial glow (colour in
+      // the dense centre fading to transparent at the edges) rather than a set
+      // of hard concentric contour lines.
       const contourG = detailGroup.append("g")
         .attr("transform", `translate(${cox},${coy})`)
-        .style("pointer-events", "none").style("mix-blend-mode", "multiply");
+        .style("pointer-events", "none").style("mix-blend-mode", "multiply")
+        .style("filter", `blur(${base * 0.035}px)`);
       const dContour = d3.contourDensity().x(p => p.x - cox).y(p => p.y - coy)
         .size([cHalf * 2, cHalf * 2]).bandwidth(settings.bandwidth).thresholds(settings.thresholds);
       function updateContour() {
         contourG.selectAll("path").data(dContour(dNodes)).join("path")
-          .attr("d", d3.geoPath()).attr("fill", chart.color).attr("fill-opacity", 0.08).attr("stroke", "none");
+          .attr("d", d3.geoPath()).attr("fill", chart.color).attr("fill-opacity", 0.11).attr("stroke", "none");
       }
 
       const connectorG = detailGroup.append("g").attr("class", "zone-links").style("pointer-events", "none");
@@ -965,6 +969,13 @@ async function _2(FileAttachment,d3)
         });
       }
 
+      // Tiny dot marking each sub-zone's pin (attach) point, where its
+      // connectors terminate. Moves live when the attach point is tuned.
+      const pinDots = detailGroup.selectAll("circle.zone-pin").data(zoneAnchors).join("circle")
+        .attr("class", "zone-pin")
+        .attr("cx", d => d.ax).attr("cy", d => d.ay).attr("r", base * 0.009)
+        .attr("fill", chart.color).style("pointer-events", "none");
+
       // Draggable project nodes (same as master), each with a hover info card.
       const nodeSel = detailGroup.selectAll("g.detail-node").data(dNodes).join("g")
         .attr("class", "detail-node").style("pointer-events", "auto").style("cursor", "grab");
@@ -985,8 +996,17 @@ async function _2(FileAttachment,d3)
         cardFO.append("xhtml:div").html(cardHTML(d, chart));
         // Raise the whole node to the top of the detail map on hover so its
         // info card paints above every other node/label (SVG has no z-index).
-        g.on("mouseenter", () => { g.raise(); cardFO.interrupt().transition().duration(140).style("opacity", 1); })
-         .on("mouseleave", () => cardFO.interrupt().transition().duration(140).style("opacity", 0));
+        // Hovering also highlights this node's connectors and dims the others.
+        g.on("mouseenter", () => {
+          g.raise();
+          cardFO.interrupt().transition().duration(140).style("opacity", 1);
+          linkSel.attr("stroke-opacity", l => l.source === d ? 0.95 : 0.08);
+          nodeSel.interrupt().transition().duration(140).style("opacity", n => n === d ? 1 : 0.2);
+        }).on("mouseleave", () => {
+          cardFO.interrupt().transition().duration(140).style("opacity", 0);
+          linkSel.attr("stroke-opacity", 0.5);
+          nodeSel.interrupt().transition().duration(140).style("opacity", 1);
+        });
       });
 
       // Force simulation (nodes only; zones are static anchors). With art the
@@ -1049,6 +1069,7 @@ async function _2(FileAttachment,d3)
             za.ax = imgBox.x + xf * imgBox.w;
             za.ay = imgBox.y + yf * imgBox.h;
             linkSel.attr("d", connPath);
+            pinDots.attr("cx", d => d.ax).attr("cy", d => d.ay);
           },
           setNodeArea(xf, yf) {
             const nx = imgBox.x + xf * imgBox.w, ny = imgBox.y + yf * imgBox.h;
@@ -2124,7 +2145,7 @@ async function _2(FileAttachment,d3)
       position: fixed; left: 20px; top: 20px; z-index: 9;
       display: flex; flex-direction: column; align-items: flex-start;
     }
-    .ecca-header-img { display: block; width: 300px; max-width: 42vw; height: auto;
+    .ecca-header-img { display: block; width: 225px; max-width: 32vw; height: auto;
       filter: drop-shadow(0 4px 16px rgba(0,0,0,0.12)); }
     .ecca-header .ecca-back {
       cursor: pointer; font-size: 13px; font-weight: 600;
@@ -2148,6 +2169,7 @@ async function _2(FileAttachment,d3)
     /* Bottom-right stack: How-to-Explore art bubble over the legend + character. */
     .ecca-br { position: fixed; right: 20px; bottom: 20px; z-index: 9; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
     .ecca-explore { margin-right: 34px; }
+    .ecca-explore.collapsed { display: none; }
     .ecca-explore-img { display: block; width: 230px; max-width: 40vw; height: auto;
       filter: drop-shadow(0 4px 16px rgba(0,0,0,0.10)); }
 
@@ -2178,7 +2200,7 @@ async function _2(FileAttachment,d3)
     .ecca-legend.collapsed { display: none; }
     .ecca-legend-img { display: block; height: auto;
       filter: drop-shadow(0 6px 24px rgba(0,0,0,0.18)); }
-    .ecca-legend-desktop { width: 300px; max-width: 30vw; }
+    .ecca-legend-desktop { width: 225px; max-width: 22.5vw; }
     .ecca-legend-mobile { display: none; }
 
     /* Mobile: bigger bubbles, character shrinks, and the wide mobile legend
@@ -2188,8 +2210,8 @@ async function _2(FileAttachment,d3)
       .ecca-char-wrap { margin-left: 0; }
       .ecca-character { height: 150px; }
       .ecca-legend-desktop { display: none; }
-      .ecca-legend-mobile { display: block; width: 92vw; max-width: 560px; }
-      .ecca-header-img { width: 300px; max-width: 62vw; }
+      .ecca-legend-mobile { display: block; width: 69vw; max-width: 420px; }
+      .ecca-header-img { width: 225px; max-width: 46vw; }
       .ecca-explore-img { width: 260px; max-width: 52vw; }
     }
   `);
@@ -2242,7 +2264,9 @@ async function _2(FileAttachment,d3)
   const characterImg = charWrap.append("img").attr("class", "ecca-character").attr("alt", "")
     .attr("title", "Click to toggle legend");
   characterImg.on("click", () => {
-    legendPanel.classed("collapsed", !legendPanel.classed("collapsed"));
+    const collapsed = !legendPanel.classed("collapsed");
+    legendPanel.classed("collapsed", collapsed);
+    exploreBubble.classed("collapsed", collapsed); // hide/show the "How to Explore" blob too
   });
 
   // Pre-rendered legend art, swapped by view + viewport in setChrome.
@@ -2273,6 +2297,10 @@ async function _2(FileAttachment,d3)
       characterImg.attr("src", CHARACTERS[mode] || CHARACTERS.master);
       legendDesktop.attr("src", LEGEND_ART.themeDesktop);
       legendMobile.attr("src", LEGEND_ART.themeMobile);
+      // Zooming into an entry point always reveals the legend + how-to blob,
+      // even if the user had toggled them off in the overview.
+      legendPanel.classed("collapsed", false);
+      exploreBubble.classed("collapsed", false);
     }
   }
   setChrome("master");
