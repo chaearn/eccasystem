@@ -2225,12 +2225,11 @@ async function _2(FileAttachment,d3)
   const headerBlob = d3.create("div").attr("class", "ecca-header ecca-chrome");
   const headerInner = headerBlob.append("div").attr("class", "ecca-header-inner");
 
-  // Bottom-left link to the full annual-report page (a separate page being
-  // built) — placeholder URL for now, swap in the real one when it's live.
-  const REPORT_URL = "https://example.com/ecca-annual-report-2026"; // TODO: real report URL
+  // Bottom-left link to the full annual-report page.
+  const REPORT_URL = "https://chaearn.github.io/ECCA-Report-2025/";
   const reportLink = d3.create("a").attr("class", "ecca-report ecca-chrome")
     .attr("href", REPORT_URL).attr("target", "_blank").attr("rel", "noopener noreferrer")
-    .html(`📄 Read ECCA Annual Report 2026 →`);
+    .html(`📄 Read ECCA Annual Report 2025 →`);
 
   // Per-view character illustration (the SVGs you exported). Doubles as the
   // legend toggle — clicking the character hides/shows the legend panel.
