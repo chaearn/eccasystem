@@ -243,6 +243,10 @@ async function _2(FileAttachment,d3)
   let crossLabelLayer;
 
   const panels = [];
+  // Global (zoomLayer-space) bumper zone for every title badge, so a node from
+  // any quadrant is kept off ALL badges — not just its own panel's. Each panel
+  // pushes its entry and keeps it current (badges are draggable) in render().
+  const badgeRegistry = [];
 
   // Each panel's simulation independently asked updateCrossLinks() to redraw
   // on its own tick schedule. Since all 4 panels tick in lockstep, that
@@ -636,6 +640,41 @@ async function _2(FileAttachment,d3)
       "FLF349 - Forest Restoration through Agroecology": ["Landscape Restoration", "Regenerative Agriculture"],
       "Pai Regenerative Network": ["Landscape Restoration", "Regenerative Agriculture"],
       "Sangsuree Power": ["Just Transition"]
+    },
+    "Healthy Oceans": {
+      "30x30 SEA Ocean Fund": ["Protection & Restoration", "Livelihoods & Sustainable Use"],
+      "Sea Guardians": ["Protection & Restoration", "Livelihoods & Sustainable Use", "Adaptation & Resilience", "Governance & Policy"],
+      "Coral Conservation & Marine Science": ["Protection & Restoration"],
+      "Mapping Connectivity of Coral Reefs": ["Protection & Restoration"],
+      "Net Free Seas": ["Livelihoods & Sustainable Use", "Pollution & Plastics", "Governance & Policy"],
+      "Ocean Fund I-B": ["Pollution & Plastics"],
+      "Circular Economy Technology": ["Pollution & Plastics"],
+      "Seaweed-based biomaterial": ["Pollution & Plastics"],
+      "Precious Plastic": ["Pollution & Plastics"],
+      "Ocean plastic recovery & finance": ["Pollution & Plastics"],
+      "30x30 Thailand Coalition": ["Governance & Policy"]
+    },
+    "Inclusive Communities": {
+      "Community-led Emergency Preparedness": ["Health & Wellbeing", "Protection & Safety"],
+      "Gang i Gaden": ["Health & Wellbeing", "Protection & Safety"],
+      "Border Health": ["Health & Wellbeing", "Protection & Safety"],
+      "Navigating Emotions": ["Health & Wellbeing", "Protection & Safety", "Youth & Agency"],
+      "Refugee and Migrant Employment": ["Protection & Safety", "Livelihoods & Economic Mobility"],
+      "Grassroots Protection Network": ["Livelihoods & Economic Mobility", "Youth & Agency"],
+      "Digital Skills & Youth Agency": ["Livelihoods & Economic Mobility", "Youth & Agency"],
+      "Undifferent": ["Livelihoods & Economic Mobility"]
+    },
+    "Cultural Narratives": {
+      "Arts-based Youth Development": ["Arts for Change"],
+      "Community Theatre for Social Change": ["Arts for Change"],
+      "Bangkok 1899": ["Arts for Change", "Creative Ecosystems", "Movement Building"],
+      "Healing Arts Singapore": ["Arts for Change", "Creative Ecosystems", "Movement Building"],
+      "Arts and Mental Health": ["Arts for Change", "Narratives & Storytelling"],
+      "Nature x People": ["Narratives & Storytelling"],
+      "Scholarships; ECCA-DMJX Photojournalism Award": ["Narratives & Storytelling", "Creative Ecosystems"],
+      "Ghost 2568": ["Narratives & Storytelling", "Creative Ecosystems"],
+      "Inspiring Asia Micro Film Festival Thailand": ["Narratives & Storytelling", "Creative Ecosystems"],
+      "Bangkok Climate Action Week": ["Movement Building"]
     }
   };
 
@@ -761,6 +800,12 @@ async function _2(FileAttachment,d3)
     // Stays at its fixed corner on load; once dragged, this overrides the
     // corner target and the badge stays wherever it's dropped.
     let badgeOverride = null;
+    // This panel's badge bumper zone in global (zoomLayer) coords, shared so
+    // every panel's simulation can repel its nodes from it. Kept current in
+    // render() since the badge can be dragged.
+    const badgeZone = { gx: x + titleState.x, gy: y + titleState.y, halfW: badgeW / 2, halfH: badgeH / 2 };
+    badgeRegistry.push(badgeZone);
+
     let soloBadgeScale = 1;      // grows to 1.5 while this theme is soloed
     let zoneAnchorsRef = null;   // this theme's sub-zone blobs (for the badge line)
     let badgeConnector = null;   // bent line: badge -> closest sub-zone blob edge
@@ -785,6 +830,10 @@ async function _2(FileAttachment,d3)
         .on("start", event => {
           event.sourceEvent.stopPropagation();
           titleBadge.style("cursor", "grabbing");
+          // Reheat the sim so the badge bumper actively pushes settled nodes
+          // out of the badge's way while it's being dragged (otherwise the
+          // frozen simulation ignores the moving badge).
+          simulation.alphaTarget(0.3).restart();
         })
         .on("drag", event => {
           badgeOverride = {
@@ -795,6 +844,7 @@ async function _2(FileAttachment,d3)
         })
         .on("end", () => {
           titleBadge.style("cursor", "pointer");
+          simulation.alphaTarget(0); // let it settle again
         })
     );
 
@@ -1108,6 +1158,36 @@ async function _2(FileAttachment,d3)
     const forceXStrength = baseAxisStrength * Math.min(1.6, Math.max(0.6, 1 / panelAspect));
     const forceYStrength = baseAxisStrength * Math.min(1.6, Math.max(0.6, panelAspect));
 
+    // Client feedback: nodes must not overlap ANY title badge, including a
+    // neighbouring quadrant's. Hard constraint — any node whose icon would land
+    // inside a rectangular "bumper" around a badge is pushed to that bumper's
+    // nearest edge (inward velocity killed), guaranteeing a clear margin. Works
+    // in global coords against every badge in badgeRegistry.
+    const badgeBumperPad = 30 * layout.panelScale; // margin beyond the icon
+    const badgeBumper = (() => {
+      let ns;
+      function force() {
+        for (const d of ns) {
+          if (d.fx != null || d.fy != null) continue; // leave a dragged node alone
+          const half = (hasCard(d) ? 42 : sharedIds.has(d.id) ? 28 : 22) / 2 + badgeBumperPad;
+          const ngx = x + d.x, ngy = y + d.y; // node centre in global coords
+          for (const bz of badgeRegistry) {
+            const hw = bz.halfW + half, hh = bz.halfH + half;
+            const dx = ngx - bz.gx, dy = ngy - bz.gy;
+            if (Math.abs(dx) < hw && Math.abs(dy) < hh) {
+              const px = hw - Math.abs(dx), py = hh - Math.abs(dy);
+              // Move d out along its shortest exit (global delta == local delta,
+              // panels are translate-only).
+              if (px < py) { d.x += (dx >= 0 ? px : -px); d.vx = 0; }
+              else { d.y += (dy >= 0 ? py : -py); d.vy = 0; }
+            }
+          }
+        }
+      }
+      force.initialize = (n) => { ns = n; };
+      return force;
+    })();
+
     const simulation = d3.forceSimulation(nodes)
       .force("link", d3.forceLink(links).id(d => d.id).distance(235 * layout.panelScale).strength(0.2))
       .force("charge", d3.forceManyBody().strength(-105 * layout.panelScale))
@@ -1117,7 +1197,10 @@ async function _2(FileAttachment,d3)
         return base * layout.panelScale;
       }))
       .force("x", d3.forceX(layout.panelW / 2).strength(forceXStrength))
-      .force("y", d3.forceY(layout.panelH / 2 + 10).strength(forceYStrength));
+      .force("y", d3.forceY(layout.panelH / 2 + 10).strength(forceYStrength))
+      // Registered last so its position clamp is the final word each tick,
+      // not overwritten by the centering forces before the frame renders.
+      .force("badgeBumper", badgeBumper);
 
     const localLinks = localLinkLayer.selectAll("line")
       .data(links)
@@ -1360,6 +1443,10 @@ async function _2(FileAttachment,d3)
 
       const badgeX = titleState.x - badgeW / 2;
       const badgeY = titleState.y - badgeH / 2;
+
+      // Keep this badge's global bumper zone current (it may have been dragged).
+      badgeZone.gx = x + titleState.x;
+      badgeZone.gy = y + titleState.y;
 
       // Scale about the badge centre so it grows in place when soloed.
       titleBadge.attr("transform",
@@ -2081,7 +2168,7 @@ async function _2(FileAttachment,d3)
   function detailFitTransform(index) {
     const p = panels[index];
     if (!p || !p.detailCenter) return overviewTransform;
-    const pad = 1.25;
+    const pad = 0.9; // <1 lets the sub-zone fill (slightly overflow) the screen
     const k = Math.max(0.6, Math.min(3,
       Math.min(viewportW, viewportH) / (2 * p.detailExtent * pad)));
     return d3.zoomIdentity
@@ -2199,10 +2286,16 @@ async function _2(FileAttachment,d3)
       content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
       border: 6px solid transparent; border-top-color: #003932;
     }
-    .ecca-char-wrap:hover .ecca-char-tip { opacity: 1; }
+    .ecca-char-wrap:hover .ecca-char-tip,
+    .ecca-char-wrap.tip-hint .ecca-char-tip { opacity: 1; }
     /* Legend is now a pre-rendered image, swapped by view (master/theme) and
-       viewport (desktop/mobile). */
-    .ecca-legend { align-self: flex-end; }
+       viewport (desktop/mobile). Grows on hover — anchored bottom-right so it
+       expands away from the screen edge and the character beside it. */
+    .ecca-legend {
+      align-self: flex-end; position: relative;
+      transform-origin: bottom right; transition: transform .22s ease;
+    }
+    .ecca-legend:hover { transform: scale(1.15); z-index: 1; }
     .ecca-legend.collapsed { display: none; }
     .ecca-legend-img { display: block; height: auto;
       filter: drop-shadow(0 6px 24px rgba(0,0,0,0.18)); }
@@ -2264,11 +2357,13 @@ async function _2(FileAttachment,d3)
   const legendDesktop = legendPanel.append("img").attr("class", "ecca-legend-img ecca-legend-desktop").attr("alt", "Legend");
   const legendMobile = legendPanel.append("img").attr("class", "ecca-legend-img ecca-legend-mobile").attr("alt", "Legend");
   // Character doubles as the legend toggle; a small popover hints at that.
-  const charWrap = legendRow.append("div").attr("class", "ecca-char-wrap");
+  // The hint shows on load (tip-hint) and dismisses once the user first clicks.
+  const charWrap = legendRow.append("div").attr("class", "ecca-char-wrap tip-hint");
   charWrap.append("div").attr("class", "ecca-char-tip").text("Click to toggle legend");
   const characterImg = charWrap.append("img").attr("class", "ecca-character").attr("alt", "")
     .attr("title", "Click to toggle legend");
   characterImg.on("click", () => {
+    charWrap.classed("tip-hint", false); // hint dismissed after first use
     const collapsed = !legendPanel.classed("collapsed");
     legendPanel.classed("collapsed", collapsed);
     exploreBubble.classed("collapsed", collapsed); // hide/show the "How to Explore" blob too
