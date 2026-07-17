@@ -742,12 +742,12 @@ async function _2(FileAttachment,d3)
       nodeArea: { x: 0.52, y: 1.345 },
       zones: {
         "Protection & Restoration": {
-          cx: 0.146, cy: 0.701, r: 0.090, top: 0.505, bot: 0.896, ax: 0.146, ay: 0.896,
+          cx: 0.146, cy: 0.701, r: 0.090, top: 0.505, bot: 0.896, ax: 0.146, ay: 0.896, labelDy: 0.02,
           head: { src: "./characters/EntryA/Protection-RestorationEntryA.png", w: 343, h: 126 },
           body: { src: "./characters/EntryA/Protection-Restoration-TextEntryA.png", w: 452, h: 262 }
         },
         "Livelihoods & Sustainable Use": {
-          cx: 0.303, cy: 0.455, r: 0.107, top: 0.267, bot: 0.642, ax: 0.303, ay: 0.642,
+          cx: 0.303, cy: 0.455, r: 0.107, top: 0.267, bot: 0.642, ax: 0.303, ay: 0.642, labelDy: 0.015,
           head: { src: "./characters/EntryA/Livelihoods-SustainableUseEntryA.png", w: 431, h: 122 },
           body: { src: "./characters/EntryA/Livelihoods-SustainableUse-TextEntryA.png", w: 558, h: 206 }
         },
@@ -762,7 +762,7 @@ async function _2(FileAttachment,d3)
           body: { src: "./characters/EntryA/Adaptation-Resilience-TextEntryA.png", w: 521, h: 309 }
         },
         "Governance & Policy": {
-          cx: 0.858, cy: 0.713, r: 0.103, top: 0.551, bot: 0.875, ax: 0.858, ay: 0.875,
+          cx: 0.858, cy: 0.713, r: 0.103, top: 0.551, bot: 0.875, ax: 0.858, ay: 0.875, labelDy: -0.03,
           head: { src: "./characters/EntryA/Governance-PolicyEntryA.png", w: 348, h: 122 },
           body: { src: "./characters/EntryA/Governance-Policy-TextEntryA.png", w: 523, h: 262 }
         }
@@ -773,12 +773,12 @@ async function _2(FileAttachment,d3)
       nodeArea: { x: 0.345, y: 0.785 },
       zones: {
         "Community Forestry & Stewardship": {
-          cx: 0.181, cy: 0.297, r: 0.120, top: 0.144, bot: 0.449, ax: 0.181, ay: 0.449,
+          cx: 0.181, cy: 0.297, r: 0.120, top: 0.144, bot: 0.449, ax: 0.181, ay: 0.449, labelDy: 0.04,
           head: { src: "./characters/EntryB/Community%20ForestryStewardship.png", w: 469, h: 123 },
           body: { src: "./characters/EntryB/Community%20ForestryStewardship-Text.png", w: 526, h: 262 }
         },
         "Land Rights & Tenure": {
-          cx: 0.424, cy: 0.227, r: 0.130, top: 0.112, bot: 0.342, ax: 0.424, ay: 0.342,
+          cx: 0.424, cy: 0.227, r: 0.130, top: 0.112, bot: 0.342, ax: 0.424, ay: 0.342, labelDy: 0.015,
           head: { src: "./characters/EntryB/LandRightsTenure.png", w: 303, h: 124 },
           body: { src: "./characters/EntryB/LandRightsTenure-Text.png", w: 689, h: 206 }
         },
@@ -805,12 +805,12 @@ async function _2(FileAttachment,d3)
       nodeArea: { x: 0.635, y: 0.94 },
       zones: {
         "Health & Wellbeing": {
-          cx: 0.176, cy: 0.730, r: 0.122, top: 0.557, bot: 0.902, ax: 0.176, ay: 0.902,
+          cx: 0.176, cy: 0.730, r: 0.122, top: 0.557, bot: 0.902, ax: 0.176, ay: 0.902, labelDy: 0.025,
           head: { src: "./characters/EntryC/HealthWellbeing.png", w: 374, h: 127 },
           body: { src: "./characters/EntryC/HealthWellbeing-Text.png", w: 473, h: 318 }
         },
         "Protection & Safety": {
-          cx: 0.332, cy: 0.452, r: 0.131, top: 0.306, bot: 0.597, ax: 0.332, ay: 0.597,
+          cx: 0.332, cy: 0.452, r: 0.131, top: 0.306, bot: 0.597, ax: 0.332, ay: 0.597, labelDy: 0.02,
           head: { src: "./characters/EntryC/ProtectionSafety.png", w: 264, h: 112 },
           body: { src: "./characters/EntryC/ProtectionSafety-Text.png", w: 547, h: 318 }
         },
@@ -820,7 +820,7 @@ async function _2(FileAttachment,d3)
           body: { src: "./characters/EntryC/LivelihoodsEconomicMobility-Text.png", w: 609, h: 262 }
         },
         "Youth & Agency": {
-          cx: 0.802, cy: 0.297, r: 0.146, top: 0.156, bot: 0.438, ax: 0.802, ay: 0.438,
+          cx: 0.802, cy: 0.297, r: 0.146, top: 0.156, bot: 0.438, ax: 0.802, ay: 0.438, labelDy: 0.03,
           head: { src: "./characters/EntryC/YouthAgency.png", w: 287, h: 126 },
           body: { src: "./characters/EntryC/YouthAgency-Text.png", w: 614, h: 206 }
         }
@@ -831,22 +831,22 @@ async function _2(FileAttachment,d3)
       nodeArea: { x: 0.435, y: 1.155 },
       zones: {
         "Arts for Change": {
-          cx: 0.168, cy: 0.516, r: 0.129, top: 0.345, bot: 0.687, ax: 0.168, ay: 0.687,
+          cx: 0.168, cy: 0.516, r: 0.129, top: 0.345, bot: 0.687, ax: 0.168, ay: 0.687, labelDy: 0.015,
           head: { src: "./characters/EntryD/ArtsforChange.png", w: 246, h: 117 },
           body: { src: "./characters/EntryD/ArtsforChange-Text.png", w: 580, h: 262 }
         },
         "Narratives & Storytelling": {
-          cx: 0.412, cy: 0.368, r: 0.143, top: 0.188, bot: 0.547, ax: 0.412, ay: 0.547,
+          cx: 0.412, cy: 0.368, r: 0.143, top: 0.188, bot: 0.547, ax: 0.412, ay: 0.547, labelDy: 0.03,
           head: { src: "./characters/EntryD/NarrativesStorytelling.png", w: 370, h: 127 },
           body: { src: "./characters/EntryD/NarrativesStorytelling-Text.png", w: 656, h: 206 }
         },
         "Creative Ecosystems": {
-          cx: 0.672, cy: 0.464, r: 0.131, top: 0.295, bot: 0.633, ax: 0.672, ay: 0.633,
+          cx: 0.672, cy: 0.464, r: 0.131, top: 0.295, bot: 0.633, ax: 0.66, ay: 0.633, labelDy: 0.015,
           head: { src: "./characters/EntryD/CreativeEcosystems.png", w: 331, h: 123 },
           body: { src: "./characters/EntryD/CreativeEcosystems-Text.png", w: 626, h: 262 }
         },
         "Movement Building": {
-          cx: 0.835, cy: 0.740, r: 0.115, top: 0.597, bot: 0.884, ax: 0.835, ay: 0.884,
+          cx: 0.835, cy: 0.740, r: 0.115, top: 0.597, bot: 0.884, ax: 0.835, ay: 0.884, labelDy: -0.015,
           head: { src: "./characters/EntryD/MovementBuilding.png", w: 278, h: 121 },
           body: { src: "./characters/EntryD/MovementBuilding-Text.png", w: 533, h: 262 }
         }
@@ -1138,6 +1138,12 @@ async function _2(FileAttachment,d3)
         .attr("stroke-width", base * 0.005).attr("stroke-linecap", "round")
         .attr("stroke-dasharray", `0.1 ${base * 0.012}`);
 
+      // Per-zone label nudge, applied ONLY to the hover layout: at rest the
+      // headline must stay centred in its blob, so the offset eases in on hover
+      // and back out on leave. Setters are kept for the settings panel; offsets
+      // are fractions of the artwork, so they hold at any zoom.
+      const labelSetters = [];
+
       // Per-zone labels + invisible hit targets over the artwork.
       // Where the artwork carries no baked-in text, each zone supplies its
       // headline/body as separate PNGs (see SUBZONE_ART). At rest only the
@@ -1169,7 +1175,19 @@ async function _2(FileAttachment,d3)
           const cfg = za.cfg || {};
           let onEnter = () => {}, onLeave = () => {};
           if (cfg.head) {
-            const labelG = detailGroup.append("g").style("pointer-events", "none");
+            // The nudge lives on the label group, but is only applied while
+            // hovered — rest keeps translate(0,0) so the headline stays centred.
+            const labelG = detailGroup.append("g").style("pointer-events", "none")
+              .attr("transform", "translate(0,0)");
+            const nudge = { x: 0, y: 0, hovered: false };
+            const setNudge = (dxf, dyf) => {
+              nudge.x = dxf * imgBox.w; nudge.y = dyf * imgBox.h;
+              // Live-apply while tuning, but only if this zone is showing.
+              if (nudge.hovered) labelG.interrupt().attr("transform", `translate(${nudge.x},${nudge.y})`);
+            };
+            setNudge(settings[`sz${artL}ldx${za.index}`] ?? cfg.labelDx ?? 0,
+                     settings[`sz${artL}ldy${za.index}`] ?? cfg.labelDy ?? 0);
+            labelSetters[za.index] = setNudge;
             // Rest: headline at full size, centred in the blob.
             const hw = cfg.head.w * labelUnit, hh = cfg.head.h * labelUnit;
             const restY = za.y - hh / 2;
@@ -1195,12 +1213,18 @@ async function _2(FileAttachment,d3)
               .attr("width", hw).attr("height", hh)
               .attr("preserveAspectRatio", "xMidYMid meet");
             onEnter = () => {
+              nudge.hovered = true;
+              labelG.interrupt().transition().duration(180)
+                .attr("transform", `translate(${nudge.x},${nudge.y})`);
               headImg.interrupt().transition().duration(180)
                 .attr("x", za.x - hw2 / 2).attr("y", hoverY)
                 .attr("width", hw2).attr("height", hh2);
               if (bodyImg) bodyImg.interrupt().transition().duration(180).style("opacity", 1);
             };
             onLeave = () => {
+              nudge.hovered = false;
+              labelG.interrupt().transition().duration(180)
+                .attr("transform", "translate(0,0)");
               headImg.interrupt().transition().duration(180)
                 .attr("x", za.x - hw / 2).attr("y", restY)
                 .attr("width", hw).attr("height", hh);
@@ -1322,6 +1346,13 @@ async function _2(FileAttachment,d3)
             za.ay = imgBox.y + yf * imgBox.h;
             linkSel.attr("d", connPath);
             pinDots.attr("cx", d => d.ax).attr("cy", d => d.ay);
+          },
+          // Nudge a zone's label (headline + body together) in its HOVER state
+          // only — rest stays centred. Independent of setAttach, which moves
+          // the connector pin dot.
+          setLabelOffset(i, dxf, dyf) {
+            const set = labelSetters[i];
+            if (set) set(dxf, dyf);
           },
           setNodeArea(xf, yf) {
             const nx = imgBox.x + xf * imgBox.w, ny = imgBox.y + yf * imgBox.h;
@@ -2658,6 +2689,10 @@ async function _2(FileAttachment,d3)
     .style("margin-top", "8px")
     .style("padding", "14px")
     .style("width", "220px")
+    // Cap to the viewport and scroll: the panel outgrew the screen, which left
+    // the sub-zone sliders at the bottom with no way to reach them.
+    .style("max-height", "calc(100vh - 90px)")
+    .style("overflow-y", "auto")
     .style("background", "#fff")
     .style("border-radius", "10px")
     .style("box-shadow", "0 4px 20px rgba(0,0,0,0.15)");
@@ -2667,8 +2702,29 @@ async function _2(FileAttachment,d3)
     settingsBody.style("display", hidden ? "block" : "none");
   });
 
+  // Live sub-zone tuning goes FIRST — it's the panel's working area, rebuilt
+  // for whichever theme is soloed. Everything below it is legacy tuning whose
+  // values are already baked in, so it's tucked behind a collapsed section.
+  const tuneContainer = settingsBody.append("div");
+  const tuneEmpty = settingsBody.append("div")
+    .style("color", "#6b7280").style("margin-bottom", "10px")
+    .text("Click a theme badge to tune its sub-zones.");
+
+  const advancedToggle = settingsBody.append("button")
+    .text("▸ Advanced (layout, cards, contour)")
+    .style("width", "100%").style("margin", "4px 0 10px")
+    .style("padding", "6px").style("border-radius", "6px")
+    .style("border", "1px solid #e6e3db").style("background", "#F7F6EF")
+    .style("font-size", "11px").style("color", "#6b7280").style("cursor", "pointer");
+  const advancedBody = settingsBody.append("div").style("display", "none");
+  advancedToggle.on("click", () => {
+    const hidden = advancedBody.style("display") === "none";
+    advancedBody.style("display", hidden ? "block" : "none");
+    advancedToggle.text((hidden ? "▾" : "▸") + " Advanced (layout, cards, contour)");
+  });
+
   function addSettingSlider(label, key, min, max, step) {
-    const row = settingsBody.append("div").style("margin-bottom", "12px");
+    const row = advancedBody.append("div").style("margin-bottom", "12px");
     const header = row.append("div")
       .style("display", "flex")
       .style("justify-content", "space-between")
@@ -2703,12 +2759,12 @@ async function _2(FileAttachment,d3)
   // computed once up front), not just a render pass, so unlike the sliders
   // above these can't be applied live. Saved immediately; a reload picks
   // them up (loadStoredSettings() above already merges saved values in).
-  settingsBody.append("div")
+  advancedBody.append("div")
     .style("margin", "4px 0 12px")
     .style("border-top", "1px solid #eee");
 
   function addDeferredSettingSlider(label, key, min, max, step) {
-    const row = settingsBody.append("div").style("margin-bottom", "12px");
+    const row = advancedBody.append("div").style("margin-bottom", "12px");
     const header = row.append("div")
       .style("display", "flex")
       .style("justify-content", "space-between")
@@ -2743,14 +2799,14 @@ async function _2(FileAttachment,d3)
 
   // Live sub-zone tuning — rebuilt for whichever theme is soloed (see the
   // solo hooks below). Applies immediately (no reload) via detailControls.
-  function addLiveSlider(container, label, key, defVal, apply, max = 1) {
+  function addLiveSlider(container, label, key, defVal, apply, max = 1, min = 0) {
     const val = settings[key] ?? defVal;
     const row = container.append("div").style("margin-bottom", "10px");
     const header = row.append("div").style("display", "flex")
       .style("justify-content", "space-between").style("margin-bottom", "4px");
     header.append("span").text(label);
     const valueLabel = header.append("span").style("color", "#6b7280").text(val);
-    row.append("input").attr("type", "range").attr("min", 0).attr("max", max).attr("step", 0.005)
+    row.append("input").attr("type", "range").attr("min", min).attr("max", max).attr("step", 0.005)
       .property("value", val).style("width", "100%")
       .on("input", function () {
         settings[key] = +this.value;
@@ -2759,21 +2815,29 @@ async function _2(FileAttachment,d3)
         saveSettings();
       });
   }
-  const tuneContainer = settingsBody.append("div");
   // Rebuild the tuning sliders for the currently-soloed theme.
   showTune = (panel) => {
     tuneContainer.selectAll("*").remove();
     const dc = panel && panel.detailControls;
+    tuneEmpty.style("display", dc ? "none" : "block");
     if (!dc) return;
     const L = dc.letter, art = dc.art, defZones = art.zones;
-    tuneContainer.append("div").style("margin", "6px 0 8px").style("border-top", "1px solid #eee");
     tuneContainer.append("div").style("font-weight", "700").style("margin-bottom", "6px")
       .text(`Sub-zones — ${panel.chart.id} (live)`);
     dc.zoneNames.forEach((zn, i) => {
       const g = defZones[zn] || { ax: 0.5, ay: 0.5 };
+      tuneContainer.append("div")
+        .style("font-weight", "600").style("margin", "10px 0 4px")
+        .style("padding-top", "6px").style("border-top", "1px solid #f0efe9")
+        .text(zn);
+      // Label = the headline + body text. Attach = the connector's pin dot.
+      const applyLabel = () => dc.setLabelOffset(i, settings[`sz${L}ldx${i}`] ?? g.labelDx ?? 0,
+                                                    settings[`sz${L}ldy${i}`] ?? g.labelDy ?? 0);
+      addLiveSlider(tuneContainer, "text ← →", `sz${L}ldx${i}`, g.labelDx ?? 0, applyLabel, 0.2, -0.2);
+      addLiveSlider(tuneContainer, "text ↑ ↓", `sz${L}ldy${i}`, g.labelDy ?? 0, applyLabel, 0.2, -0.2);
       const applyAttach = () => dc.setAttach(i, settings[`sz${L}ax${i}`] ?? g.ax, settings[`sz${L}ay${i}`] ?? g.ay);
-      addLiveSlider(tuneContainer, `${zn} — attach X`, `sz${L}ax${i}`, g.ax, applyAttach);
-      addLiveSlider(tuneContainer, `${zn} — attach Y`, `sz${L}ay${i}`, g.ay, applyAttach);
+      addLiveSlider(tuneContainer, "dot X", `sz${L}ax${i}`, g.ax, applyAttach);
+      addLiveSlider(tuneContainer, "dot Y", `sz${L}ay${i}`, g.ay, applyAttach);
     });
     const applyNodeArea = () => dc.setNodeArea(settings[`sz${L}nax`] ?? art.nodeArea.x, settings[`sz${L}nay`] ?? art.nodeArea.y);
     // Node Area can push past the artwork bounds (fraction of the image
@@ -2782,7 +2846,7 @@ async function _2(FileAttachment,d3)
     addLiveSlider(tuneContainer, "Node Area Y", `sz${L}nay`, art.nodeArea.y, applyNodeArea, 2);
   };
 
-  const reloadHint = settingsBody.append("button")
+  const reloadHint = advancedBody.append("button")
     .text("Reload to apply size change")
     .style("display", "none")
     .style("width", "100%")
