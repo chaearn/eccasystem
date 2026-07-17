@@ -734,43 +734,42 @@ async function _2(FileAttachment,d3)
   //   top    blob's top edge, ay  blob's bottom edge (normalized to HEIGHT)
   //   ax     connector attach x. head/body carry each PNG's native size.
   // cx/cy/r/top/ay were measured off each artwork (colour mask + erosion), not
-  // eyeballed. labelScale normalizes each theme's text export back to its own
-  // artwork scale (B/C/D were exported ~25% large); BODY_SCALE then applies the
-  // agreed "body reads smaller" step on top.
+  // eyeballed. Label PNGs render at a single shared scale (see LABEL_REF_W in
+  // renderDetail); BODY_SCALE then applies the "body reads smaller" step.
   const SUBZONE_ART = {
     "Healthy Oceans": {
-      letter: "A", src: "./characters/EntryA/subzone-a.png", aspect: 2.090, nativeW: 1829, labelScale: 1.0,
+      letter: "A", src: "./characters/EntryA/subzone-a.png", aspect: 2.090,
       nodeArea: { x: 0.52, y: 1.345 },
       zones: {
         "Protection & Restoration": {
           cx: 0.146, cy: 0.701, r: 0.090, top: 0.505, bot: 0.896, ax: 0.146, ay: 0.896,
-          head: { src: "./characters/EntryA/Protection-RestorationEntryA.png", w: 257, h: 94 },
-          body: { src: "./characters/EntryA/Protection-Restoration-TextEntryA.png", w: 339, h: 196 }
+          head: { src: "./characters/EntryA/Protection-RestorationEntryA.png", w: 343, h: 126 },
+          body: { src: "./characters/EntryA/Protection-Restoration-TextEntryA.png", w: 452, h: 262 }
         },
         "Livelihoods & Sustainable Use": {
           cx: 0.303, cy: 0.455, r: 0.107, top: 0.267, bot: 0.642, ax: 0.303, ay: 0.642,
-          head: { src: "./characters/EntryA/Livelihoods-SustainableUseEntryA.png", w: 323, h: 91 },
-          body: { src: "./characters/EntryA/Livelihoods-SustainableUse-TextEntryA.png", w: 419, h: 154 }
+          head: { src: "./characters/EntryA/Livelihoods-SustainableUseEntryA.png", w: 431, h: 122 },
+          body: { src: "./characters/EntryA/Livelihoods-SustainableUse-TextEntryA.png", w: 558, h: 206 }
         },
         "Pollution & Plastics": {
           cx: 0.508, cy: 0.321, r: 0.114, top: 0.167, bot: 0.475, ax: 0.508, ay: 0.475,
-          head: { src: "./characters/EntryA/Pollution-PlasticsEntryA.png", w: 227, h: 93 },
-          body: { src: "./characters/EntryA/Pollution-Plastics-TextEntryA.png", w: 352, h: 154 }
+          head: { src: "./characters/EntryA/Pollution-PlasticsEntryA.png", w: 303, h: 123 },
+          body: { src: "./characters/EntryA/Pollution-Plastics-TextEntryA.png", w: 469, h: 206 }
         },
         "Adaptation & Resilience": {
           cx: 0.730, cy: 0.382, r: 0.112, top: 0.178, bot: 0.585, ax: 0.730, ay: 0.585,
-          head: { src: "./characters/EntryA/Adaptation-ResilienceEntryA.png", w: 257, h: 92 },
-          body: { src: "./characters/EntryA/Adaptation-Resilience-TextEntryA.png", w: 392, h: 232 }
+          head: { src: "./characters/EntryA/Adaptation-ResilienceEntryA.png", w: 342, h: 123 },
+          body: { src: "./characters/EntryA/Adaptation-Resilience-TextEntryA.png", w: 521, h: 309 }
         },
         "Governance & Policy": {
           cx: 0.858, cy: 0.713, r: 0.103, top: 0.551, bot: 0.875, ax: 0.858, ay: 0.875,
-          head: { src: "./characters/EntryA/Governance-PolicyEntryA.png", w: 261, h: 92 },
-          body: { src: "./characters/EntryA/Governance-Policy-TextEntryA.png", w: 393, h: 196 }
+          head: { src: "./characters/EntryA/Governance-PolicyEntryA.png", w: 348, h: 122 },
+          body: { src: "./characters/EntryA/Governance-Policy-TextEntryA.png", w: 523, h: 262 }
         }
       }
     },
     "Regenerative Landscapes": {
-      letter: "B", src: "./characters/EntryB/subzone-b.png", aspect: 1.326, nativeW: 1824, labelScale: 0.87,
+      letter: "B", src: "./characters/EntryB/subzone-b.png", aspect: 1.326,
       nodeArea: { x: 0.345, y: 0.785 },
       zones: {
         "Community Forestry & Stewardship": {
@@ -781,17 +780,17 @@ async function _2(FileAttachment,d3)
         "Land Rights & Tenure": {
           cx: 0.424, cy: 0.227, r: 0.130, top: 0.112, bot: 0.342, ax: 0.424, ay: 0.342,
           head: { src: "./characters/EntryB/LandRightsTenure.png", w: 303, h: 124 },
-          body: { src: "./characters/EntryB/LandRightsTenure-Text.png", w: 588, h: 262 }
+          body: { src: "./characters/EntryB/LandRightsTenure-Text.png", w: 689, h: 206 }
         },
         "Landscape Restoration": {
           cx: 0.673, cy: 0.306, r: 0.134, top: 0.192, bot: 0.420, ax: 0.61, ay: 0.42,
           head: { src: "./characters/EntryB/LandscapeRestoration.png", w: 326, h: 125 },
-          body: { src: "./characters/EntryB/LandscapeRestoration-Text.png", w: 512, h: 262 }
+          body: { src: "./characters/EntryB/LandscapeRestoration-Text.png", w: 604, h: 206 }
         },
         "Regenerative Agriculture": {
           cx: 0.742, cy: 0.805, r: 0.116, top: 0.689, bot: 0.922, ax: 0.63, ay: 0.845,
           head: { src: "./characters/EntryB/RegenerativeAgriculture.png", w: 342, h: 123 },
-          body: { src: "./characters/EntryB/RegenerativeAgriculture-Text.png", w: 440, h: 309 }
+          body: { src: "./characters/EntryB/RegenerativeAgriculture-Text.png", w: 480, h: 262 }
         },
         "Just Transition": {
           cx: 0.768, cy: 0.556, r: 0.104, top: 0.424, bot: 0.688, ax: 0.66, ay: 0.615,
@@ -802,7 +801,7 @@ async function _2(FileAttachment,d3)
       }
     },
     "Inclusive Communities": {
-      letter: "C", src: "./characters/EntryC/subzone-c.png", aspect: 1.434, nativeW: 1724, labelScale: 0.83,
+      letter: "C", src: "./characters/EntryC/subzone-c.png", aspect: 1.434,
       nodeArea: { x: 0.635, y: 0.94 },
       zones: {
         "Health & Wellbeing": {
@@ -818,38 +817,38 @@ async function _2(FileAttachment,d3)
         "Livelihoods & Economic Mobility": {
           cx: 0.519, cy: 0.293, r: 0.134, top: 0.160, bot: 0.426, ax: 0.519, ay: 0.426,
           head: { src: "./characters/EntryC/LivelihoodsEconomicMobility.png", w: 535, h: 127 },
-          body: { src: "./characters/EntryC/LivelihoodsEconomicMobility-Text.png", w: 538, h: 262 }
+          body: { src: "./characters/EntryC/LivelihoodsEconomicMobility-Text.png", w: 609, h: 262 }
         },
         "Youth & Agency": {
           cx: 0.802, cy: 0.297, r: 0.146, top: 0.156, bot: 0.438, ax: 0.802, ay: 0.438,
           head: { src: "./characters/EntryC/YouthAgency.png", w: 287, h: 126 },
-          body: { src: "./characters/EntryC/YouthAgency-Text.png", w: 479, h: 262 }
+          body: { src: "./characters/EntryC/YouthAgency-Text.png", w: 614, h: 206 }
         }
       }
     },
     "Cultural Narratives": {
-      letter: "D", src: "./characters/EntryD/subzone-d.png", aspect: 1.765, nativeW: 1761, labelScale: 0.80,
+      letter: "D", src: "./characters/EntryD/subzone-d.png", aspect: 1.765,
       nodeArea: { x: 0.435, y: 1.155 },
       zones: {
         "Arts for Change": {
           cx: 0.168, cy: 0.516, r: 0.129, top: 0.345, bot: 0.687, ax: 0.168, ay: 0.687,
           head: { src: "./characters/EntryD/ArtsforChange.png", w: 246, h: 117 },
-          body: { src: "./characters/EntryD/ArtsforChange-Text.png", w: 581, h: 262 }
+          body: { src: "./characters/EntryD/ArtsforChange-Text.png", w: 580, h: 262 }
         },
         "Narratives & Storytelling": {
           cx: 0.412, cy: 0.368, r: 0.143, top: 0.188, bot: 0.547, ax: 0.412, ay: 0.547,
           head: { src: "./characters/EntryD/NarrativesStorytelling.png", w: 370, h: 127 },
-          body: { src: "./characters/EntryD/NarrativesStorytelling-Text.png", w: 657, h: 206 }
+          body: { src: "./characters/EntryD/NarrativesStorytelling-Text.png", w: 656, h: 206 }
         },
         "Creative Ecosystems": {
           cx: 0.672, cy: 0.464, r: 0.131, top: 0.295, bot: 0.633, ax: 0.672, ay: 0.633,
           head: { src: "./characters/EntryD/CreativeEcosystems.png", w: 331, h: 123 },
-          body: { src: "./characters/EntryD/CreativeEcosystems-Text.png", w: 466, h: 374 }
+          body: { src: "./characters/EntryD/CreativeEcosystems-Text.png", w: 626, h: 262 }
         },
         "Movement Building": {
           cx: 0.835, cy: 0.740, r: 0.115, top: 0.597, bot: 0.884, ax: 0.835, ay: 0.884,
           head: { src: "./characters/EntryD/MovementBuilding.png", w: 278, h: 121 },
-          body: { src: "./characters/EntryD/MovementBuilding-Text.png", w: 534, h: 262 }
+          body: { src: "./characters/EntryD/MovementBuilding-Text.png", w: 533, h: 262 }
         }
       }
     }
@@ -1147,11 +1146,18 @@ async function _2(FileAttachment,d3)
       // same arrangement the old text-baked artwork had. PNGs are scaled by the
       // artwork's own ratio so they keep their designed size.
       if (art) {
-        // Label PNGs are sized in their own native px: artScale maps the
-        // artwork's native px to map units, and labelScale corrects each
-        // theme's text export back to its artwork's scale.
-        const artScale = imgBox.w / (art.nativeW || imgBox.w);
-        const labelUnit = artScale * (art.labelScale ?? 1);
+        // Every label PNG, in all four themes, is exported at one fixed scale
+        // (verified: an identical 56px text line pitch in each), so they must
+        // all render at the same on-screen size — regardless of how many pixels
+        // wide a given artwork happens to be. LABEL_REF_W is the artwork width
+        // those exports correspond to, so dividing the rendered artwork width
+        // by it yields one label unit shared by every theme.
+        // This replaces a per-theme labelScale derived from text *widths*, which
+        // line-wrapping differences made unreliable: it rendered B/C/D's copy
+        // 11-17% larger than A's. Sizing off the export scale (not each
+        // artwork's pixel width) also stops artwork re-exports from drifting it.
+        const LABEL_REF_W = 2439;
+        const labelUnit = imgBox.w / LABEL_REF_W;
         const LABEL_GAP = 22;   // native px between headline and body
         const BODY_SCALE = 0.7; // body copy reads smaller than the headline
         // On hover the headline's TOP sits this far below the blob's top edge
