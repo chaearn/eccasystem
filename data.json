@@ -35,7 +35,7 @@
       "badgeH": 124,
       "nodes": [
         {"id": "_center", "label": ""},
-        {"id": "Inspiring Asia Micro Film Festival Thailand", "label": "Inspiring Asia Micro Film Festival Thailand", "partner": "Bangkok Documentary Club", "stage": "Scale", "country": "Singapore", "areaofwork-1": "Frointline & Communities"},
+        {"id": "Inspiring Asia Micro Film Festival Thailand", "label": "Inspiring Asia Micro Film Festival Thailand", "partner": "Bangkok Documentary Club", "stage": "Scale", "country": "Thailand", "areaofwork-1": "Frointline & Communities"},
         {"id": "Healing Arts Singapore", "label": "Healing Arts Singapore", "partner": "CULTURERUNNERS", "stage": "Scale", "country": "Singapore", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Science & Evidence", "areaofwork-3": "Network & Policy"},
         {"id": "Scholarships; ECCA-DMJX Photojournalism Award", "label": "Scholarships; ECCA-DMJX Photojournalism Award", "partner": "DMJX", "stage": "Validate", "country": "Singapore", "areaofwork-1": "Frointline & Communities"},
         {"id": "Community Theatre for Social Change", "label": "Community Theatre for Social Change", "partner": "Gab Fai", "stage": "Build", "country": "Singapore", "areaofwork-1": "Frointline & Communities"},
@@ -68,17 +68,17 @@
       "badgeH": 140,
       "nodes": [
         {"id": "_center", "label": ""},
-        {"id": "30x30 SEA Ocean Fund", "label": "30x30 SEA Ocean Fund", "partner": "Asia Community Foundation", "stage": "Pilot"},
-        {"id": "Net Free Seas", "label": "Net Free Seas", "partner": "Environmental Justice Foundation", "stage": "Build"},
-        {"id": "Sea Guardians", "label": "Sea Guardians", "partner": "Thai Sea Watch Association", "stage": "Validate"},
-        {"id": "Precious Plastic", "label": "Precious Plastic", "partner": "Green World Foundation", "stage": "Build"},
-        {"id": "30x30 Thailand Coalition", "label": "30x30 Thailand Coalition", "partner": "Love Wildlife Foundation", "stage": "Pilot"},
-        {"id": "Mapping Connectivity of Coral Reefs", "label": "Mapping Connectivity of Coral Reefs", "partner": "ATMEC", "stage": "Validate"},
-        {"id": "Coral Conservation & Marine Science", "label": "Coral Conservation & Marine Science", "partner": "CORESea", "stage": "Validate"},
-        {"id": "Circular Economy Technology", "label": "Circular Economy Technology", "partner": "Micro Greentech", "stage": "Pilot"},
-        {"id": "Ocean Fund I-B", "label": "Ocean Fund I-B", "partner": "Circulate Capital", "stage": "Scale"},
-        {"id": "Ocean plastic recovery & finance", "label": "Ocean plastic recovery & finance", "partner": "Seven Clean Seas", "stage": "Build"},
-        {"id": "Seaweed-based biomaterial", "label": "Seaweed-based biomaterial", "partner": "Nano Onions", "stage": "Pilot"}
+        {"id": "30x30 SEA Ocean Fund", "label": "30x30 SEA Ocean Fund", "partner": "Asia Community Foundation", "stage": "Pilot", "country": "Singapore", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Network & Policy"},
+        {"id": "Net Free Seas", "label": "Net Free Seas", "partner": "Environmental Justice Foundation", "stage": "Build", "country": "Singapore", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Markets & Finance", "areaofwork-3": "Network & Policy"},
+        {"id": "Sea Guardians", "label": "Sea Guardians", "partner": "Thai Sea Watch Association", "stage": "Validate", "country": "Singapore", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Science & Evidence", "areaofwork-3": "Network & Policy"},
+        {"id": "Precious Plastic", "label": "Precious Plastic", "partner": "Green World Foundation", "stage": "Build", "country": "Singapore", "areaofwork-1": "Frointline & Communities"},
+        {"id": "30x30 Thailand Coalition", "label": "30x30 Thailand Coalition", "partner": "Love Wildlife Foundation", "stage": "Pilot", "country": "Thailand", "areaofwork-1": "Network & Policy"},
+        {"id": "Mapping Connectivity of Coral Reefs", "label": "Mapping Connectivity of Coral Reefs", "partner": "ATMEC", "stage": "Validate", "country": "Singapore", "areaofwork-1": "Science & Evidence", "areaofwork-2": "Network & Policy"},
+        {"id": "Coral Conservation & Marine Science", "label": "Coral Conservation & Marine Science", "partner": "CORESea", "stage": "Validate", "country": "Singapore", "areaofwork-1": "Science & Evidence"},
+        {"id": "Circular Economy Technology", "label": "Circular Economy Technology", "partner": "Micro Greentech", "stage": "Pilot", "country": "Singapore", "areaofwork-1": "Markets & Finance"},
+        {"id": "Ocean Fund I-B", "label": "Ocean Fund I-B", "partner": "Circulate Capital", "stage": "Scale", "country": "Singapore", "areaofwork-1": "Markets & Finance", "areaofwork-2": "Network & Policy"},
+        {"id": "Ocean plastic recovery & finance", "label": "Ocean plastic recovery & finance", "partner": "Seven Clean Seas", "stage": "Build", "country": "Singapore", "areaofwork-1": "Markets & Finance", "areaofwork-2": "Frointline & Communities", "areaofwork-3": "Network & Policy"},
+        {"id": "Seaweed-based biomaterial", "label": "Seaweed-based biomaterial", "partner": "Nano Onions", "stage": "Pilot", "country": "Singapore", "areaofwork-1": "Markets & Finance"}
       ],
       "links": [
         {"source": "_center", "target": "30x30 SEA Ocean Fund", "label": ""},
@@ -103,14 +103,14 @@
       "badgeH": 133,
       "nodes": [
         {"id": "_center", "label": ""},
-        {"id": "Navigating Emotions", "label": "Navigating Emotions", "partner": "Bettr Lives", "stage": "Validate"},
-        {"id": "Digital Skills & Youth Agency", "label": "Digital Skills & Youth Agency", "partner": "Kita", "stage": "Pilot"},
-        {"id": "Undifferent", "label": "Undifferent", "partner": "Trampolene", "stage": "Validate"},
-        {"id": "Grassroots Protection Network", "label": "Grassroots Protection Network", "partner": "The Freedom Story", "stage": "Build"},
-        {"id": "Border Health", "label": "Border Health", "partner": "Mae Tao Clinic", "stage": "Build"},
-        {"id": "Gang i Gaden", "label": "Gang i Gaden", "partner": "Settlementet Vesterbro", "stage": "Build"},
-        {"id": "Refugee and Migrant Employment", "label": "Refugee and Migrant Employment", "partner": "Issa Solutions", "stage": "Pilot"},
-        {"id": "Community-led Emergency Preparedness", "label": "Community-led Emergency Preparedness", "partner": "Health & Share Foundation", "stage": "Build"}
+        {"id": "Navigating Emotions", "label": "Navigating Emotions", "partner": "Bettr Lives", "stage": "Validate", "country": "Singapore", "areaofwork-1": "Frointline & Communities"},
+        {"id": "Digital Skills & Youth Agency", "label": "Digital Skills & Youth Agency", "partner": "Kita", "stage": "Pilot", "country": "Singapore", "areaofwork-1": "Frointline & Communities"},
+        {"id": "Undifferent", "label": "Undifferent", "partner": "Trampolene", "stage": "Validate", "country": "Singapore", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Markets & Finance"},
+        {"id": "Grassroots Protection Network", "label": "Grassroots Protection Network", "partner": "The Freedom Story", "stage": "Build", "country": "Singapore", "areaofwork-1": "Frointline & Communities"},
+        {"id": "Border Health", "label": "Border Health", "partner": "Mae Tao Clinic", "stage": "Build", "country": "Singapore", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Network & Policy"},
+        {"id": "Gang i Gaden", "label": "Gang i Gaden", "partner": "Settlementet Vesterbro", "stage": "Build", "country": "Singapore", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Network & Policy"},
+        {"id": "Refugee and Migrant Employment", "label": "Refugee and Migrant Employment", "partner": "Issa Solutions", "stage": "Pilot", "country": "Singapore", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Markets & Finance", "areaofwork-3": "Network & Policy"},
+        {"id": "Community-led Emergency Preparedness", "label": "Community-led Emergency Preparedness", "partner": "Health & Share Foundation", "stage": "Build", "country": "Singapore", "areaofwork-1": "Frointline & Communities"}
       ],
       "links": [
         {"source": "_center", "target": "Navigating Emotions", "label": ""},
