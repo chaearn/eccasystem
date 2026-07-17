@@ -1620,8 +1620,24 @@ async function _2(FileAttachment,d3)
       infoCards.each(function(d) {
         const wrapperEl = this.firstElementChild;      // fills the foreignObject
         const cardEl = wrapperEl && wrapperEl.firstElementChild; // the fit-content card
-        const measuredH = wrapperEl ? wrapperEl.offsetHeight : 0;
-        const measuredW = cardEl ? cardEl.offsetWidth : 0;
+        // offsetWidth/offsetHeight are the exact, cheap path — but they resolve
+        // against offsetParent, and WebKit leaves offsetParent null inside a
+        // <foreignObject>, so they report 0 there. Unguarded, that skips the
+        // measurement below and strands every card at its default size in
+        // Safari. getBoundingClientRect() has no offsetParent dependency and
+        // works everywhere; it just reports *screen* pixels, so the map's zoom
+        // has to be divided back out to get user units.
+        const userUnits = (el) => {
+          const ctm = this.getScreenCTM();
+          const scale = ctm ? Math.hypot(ctm.a, ctm.b) : 1;
+          if (!(scale > 0)) return { w: 0, h: 0 };
+          const r = el.getBoundingClientRect();
+          return { w: r.width / scale, h: r.height / scale };
+        };
+        let measuredH = wrapperEl ? wrapperEl.offsetHeight : 0;
+        let measuredW = cardEl ? cardEl.offsetWidth : 0;
+        if (!measuredH && wrapperEl) measuredH = userUnits(wrapperEl).h;
+        if (!measuredW && cardEl) measuredW = userUnits(cardEl).w;
         if (measuredH > 0) {
           const h = measuredH + 4;
           const w = measuredW > 0 ? measuredW : card.w;
