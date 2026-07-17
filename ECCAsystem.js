@@ -500,7 +500,34 @@ async function _2(FileAttachment,d3)
     return !!(d.partner || d.stage || d.label);
   }
 
-  function cardHTML(d, chart) {
+  // Country flag shown top-right on master-map cards (data.json `country`).
+  const COUNTRY_ICON = {
+    "Thailand": "./characters/CountrySVG/Thailand.svg",
+    "Singapore": "./characters/CountrySVG/Singapore.svg"
+  };
+  // Areas of work shown as icons on sub-zone cards, in place of the stage pill
+  // (data.json `areaofwork-1..n`). "Frointline" matches the spelling used in
+  // both data.json and the asset filename; the correct spelling is accepted too
+  // so fixing the data later doesn't silently drop the icon.
+  const AREA_ICON = {
+    "Frointline & Communities": "./characters/AreaofWork/FrointlineCommunities.svg",
+    "Frontline & Communities": "./characters/AreaofWork/FrointlineCommunities.svg",
+    "Science & Evidence": "./characters/AreaofWork/ScienceEvidence.svg",
+    "Markets & Finance": "./characters/AreaofWork/MarketsFinance.svg",
+    "Network & Policy": "./characters/AreaofWork/NetworkPolicy.svg"
+  };
+  // areaofwork-1, areaofwork-2, ... in order, skipping blanks/unknowns.
+  function areasOf(d) {
+    return Object.keys(d)
+      .filter(k => /^areaofwork-\d+$/.test(k))
+      .sort((a, b) => (+a.split("-")[1]) - (+b.split("-")[1]))
+      .map(k => d[k])
+      .filter(v => v && AREA_ICON[v]);
+  }
+
+  // variant: "master" -> country flag top-right + stage pill.
+  //          "zone"   -> area-of-work icons in place of the stage pill.
+  function cardHTML(d, chart, variant = "master") {
     // Everything here is rem (except max-width — card.w is already a
     // JS-computed responsive value, see isSmallScreen() above). The card is
     // width:fit-content so it hugs its text (capped at card.w), with the real
@@ -524,8 +551,22 @@ async function _2(FileAttachment,d3)
     const href = clickable ? String(d.url).replace(/"/g, "&quot;") : "";
     const tag = clickable ? "a" : "div";
     const linkAttrs = clickable ? `href="${href}" target="_blank" rel="noopener noreferrer"` : "";
+    // Country flag straddles the card's top-right corner (master map only).
+    const flagSrc = variant === "master" ? COUNTRY_ICON[d.country] : null;
+    const flag = flagSrc ? `<img src="${flagSrc}" alt="${esc(d.country)}" style="
+        position:absolute;
+        top:-0.4rem;
+        right:0.2rem;
+        width:1.5rem;
+        height:auto;
+        border-radius:0.125rem;
+        box-shadow:0 1px 3px rgba(0,0,0,0.22);
+      ">` : "";
+    // Areas of work replace the stage pill on sub-zone cards.
+    const areas = variant === "zone" ? areasOf(d) : [];
     return `
       <${tag} class="poppins" ${linkAttrs} style="
+        position:relative;
         width:fit-content;
         min-height:auto;
         box-sizing:border-box;
@@ -540,6 +581,7 @@ async function _2(FileAttachment,d3)
         gap:0.25rem;
         box-shadow:0 1px 0 rgba(0,0,0,0.02);
       ">
+        ${flag}
         <div class="poppins" style="
           font-size:${t.partner}rem;
           font-weight:500;
@@ -566,18 +608,26 @@ async function _2(FileAttachment,d3)
           padding-top: 0.5rem;
         ">
           ${
-            d.stage
-              ? `<div class="poppins" style="
-                  align-self:flex-start;
-                  background:${chart.color}22;
-                  color:${chart.color};
-                  border-radius:0.1875rem;
-                  padding:0.25rem 0.5rem;
-                  font-size:${t.stage}rem;
-                  font-weight:600;
-                  line-height:1;
-                ">${d.stage}</div>`
-              : ``
+            variant === "zone"
+              // Sub-zone: areas of work, in place of the stage pill.
+              ? (areas.length
+                  ? `<div style="display:flex; align-items:center; gap:0.25rem;">${
+                      areas.map(a => `<img src="${AREA_ICON[a]}" alt="${esc(a)}" title="${esc(a)}"
+                        style="width:1.4rem;height:1.4rem;display:block;flex:none;">`).join("")
+                    }</div>`
+                  : ``)
+              : (d.stage
+                  ? `<div class="poppins" style="
+                      align-self:flex-start;
+                      background:${chart.color}22;
+                      color:${chart.color};
+                      border-radius:0.1875rem;
+                      padding:0.25rem 0.5rem;
+                      font-size:${t.stage}rem;
+                      font-weight:600;
+                      line-height:1;
+                    ">${d.stage}</div>`
+                  : ``)
           }
           ${
             clickable
@@ -1186,7 +1236,7 @@ async function _2(FileAttachment,d3)
           .attr("x", -card.w / 2).attr("y", iconR)
           .attr("width", card.w).attr("height", card.h * 1.7)
           .style("overflow", "visible").style("opacity", 0).style("pointer-events", "none");
-        cardFO.append("xhtml:div").html(cardHTML(d, chart));
+        cardFO.append("xhtml:div").html(cardHTML(d, chart, "zone"));
         // Raise the whole node to the top of the detail map on hover so its
         // info card paints above every other node/label (SVG has no z-index).
         // Hovering hides this node's id, shows its card, highlights its

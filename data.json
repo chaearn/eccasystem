@@ -12,11 +12,11 @@
       "badgeH": 187,
       "nodes": [
         {"id": "_center", "label": ""},
-        {"id": "Sangsuree Power", "label": "Sangsuree Power", "partner": "Tara Climate Foundation", "stage": "Pilot"},
-        {"id": "FLF349 - Forest Restoration through Agroecology", "label": "FLF349 - Forest Restoration through Agroecology", "partner": "World Wide Fund for Nature", "stage": "Build"},
-        {"id": "Pai Regenerative Network", "label": "Pai Regenerative Network", "partner": "Pai Seedlings", "stage": "Validate"},
-        {"id": "Mangroves, Forests, Climate and Livelihoods Program", "label": "Mangroves, Forests, Climate and Livelihoods Program", "partner": "Landesa", "stage": "Build"},
-        {"id": "Grow CF", "label": "Grow CF", "partner": "RECOFTC", "stage": "Build", "url": "https://example.com/grow-cf"}
+        {"id": "Sangsuree Power", "label": "Sangsuree Power", "partner": "Tara Climate Foundation", "stage": "Pilot", "country": "Thailand", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Markets & Finance" },
+        {"id": "FLF349 - Forest Restoration through Agroecology", "label": "FLF349 - Forest Restoration through Agroecology", "partner": "World Wide Fund for Nature", "stage": "Build", "country": "Singapore", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Network & Policy"},
+        {"id": "Pai Regenerative Network", "label": "Pai Regenerative Network", "partner": "Pai Seedlings", "stage": "Validate", "country": "Thailand", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Markets & Finance"},
+        {"id": "Mangroves, Forests, Climate and Livelihoods Program", "label": "Mangroves, Forests, Climate and Livelihoods Program", "partner": "Landesa", "stage": "Build", "country": "Thailand", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Science & Evidence", "areaofwork-3": "Network & Policy"},
+        {"id": "Grow CF", "label": "Grow CF", "partner": "RECOFTC", "stage": "Build", "url": "#", "country": "Thailand", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Science & Evidence", "areaofwork-3": "Network & Policy"}
       ],
       "links": [
         {"source": "_center", "target": "Sangsuree Power", "label": ""},
@@ -35,16 +35,16 @@
       "badgeH": 124,
       "nodes": [
         {"id": "_center", "label": ""},
-        {"id": "Inspiring Asia Micro Film Festival Thailand", "label": "Inspiring Asia Micro Film Festival Thailand", "partner": "Bangkok Documentary Club", "stage": "Scale"},
-        {"id": "Healing Arts Singapore", "label": "Healing Arts Singapore", "partner": "CULTURERUNNERS", "stage": "Scale"},
-        {"id": "Scholarships; ECCA-DMJX Photojournalism Award", "label": "Scholarships; ECCA-DMJX Photojournalism Award", "partner": "DMJX", "stage": "Validate"},
-        {"id": "Community Theatre for Social Change", "label": "Community Theatre for Social Change", "partner": "Gab Fai", "stage": "Build"},
-        {"id": "Bangkok Climate Action Week", "label": "Bangkok Climate Action Week", "partner": "JUTI", "stage": "Pilot"},
-        {"id": "Bangkok 1899", "label": "Bangkok 1899", "partner": "Creative Migration", "stage": "Build"},
-        {"id": "Nature x People", "label": "Nature x People", "partner": "Love Frankie", "stage": "Pilot"},
-        {"id": "Ghost 2568", "label": "Ghost 2568", "partner": "Bangkok CityCity Gallery", "stage": "Build"},
-        {"id": "Arts and Mental Health", "label": "Arts and Mental Health", "partner": "Nationalt Center for Kunst og Mental Sundhed (CKMS)", "stage": "Scale"},
-        {"id": "Arts-based Youth Development", "label": "Arts-based Youth Development", "partner": "Turning Tables Denmark", "stage": "Scale"}
+        {"id": "Inspiring Asia Micro Film Festival Thailand", "label": "Inspiring Asia Micro Film Festival Thailand", "partner": "Bangkok Documentary Club", "stage": "Scale", "country": "Singapore", "areaofwork-1": "Frointline & Communities"},
+        {"id": "Healing Arts Singapore", "label": "Healing Arts Singapore", "partner": "CULTURERUNNERS", "stage": "Scale", "country": "Singapore", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Science & Evidence", "areaofwork-3": "Network & Policy"},
+        {"id": "Scholarships; ECCA-DMJX Photojournalism Award", "label": "Scholarships; ECCA-DMJX Photojournalism Award", "partner": "DMJX", "stage": "Validate", "country": "Singapore", "areaofwork-1": "Frointline & Communities"},
+        {"id": "Community Theatre for Social Change", "label": "Community Theatre for Social Change", "partner": "Gab Fai", "stage": "Build", "country": "Singapore", "areaofwork-1": "Frointline & Communities"},
+        {"id": "Bangkok Climate Action Week", "label": "Bangkok Climate Action Week", "partner": "JUTI", "stage": "Pilot", "country": "Thailand", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Network & Policy"},
+        {"id": "Bangkok 1899", "label": "Bangkok 1899", "partner": "Creative Migration", "stage": "Build", "country": "Thailand", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Network & Policy"},
+        {"id": "Nature x People", "label": "Nature x People", "partner": "Love Frankie", "stage": "Pilot", "country": "Thailand", "areaofwork-1": "Frointline & Communities"},
+        {"id": "Ghost 2568", "label": "Ghost 2568", "partner": "Bangkok CityCity Gallery", "stage": "Build", "country": "Thailand", "areaofwork-1": "Frointline & Communities"},
+        {"id": "Arts and Mental Health", "label": "Arts and Mental Health", "partner": "Nationalt Center for Kunst og Mental Sundhed (CKMS)", "stage": "Scale", "country": "Singapore", "areaofwork-1": "Frointline & Communities", "areaofwork-2": "Science & Evidence", "areaofwork-3": "Network & Policy"},
+        {"id": "Arts-based Youth Development", "label": "Arts-based Youth Development", "partner": "Turning Tables Denmark", "stage": "Scale", "country": "Singapore", "areaofwork-1": "Frointline & Communities"}
       ],
       "links": [
         {"source": "_center", "target": "Inspiring Asia Micro Film Festival Thailand", "label": ""},
