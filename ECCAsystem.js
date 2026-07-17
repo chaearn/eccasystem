@@ -552,11 +552,16 @@ async function _2(FileAttachment,d3)
     const tag = clickable ? "a" : "div";
     const linkAttrs = clickable ? `href="${href}" target="_blank" rel="noopener noreferrer"` : "";
     // Country flag straddles the card's top-right corner (master map only).
+    // The overhang is negative margins on a normal flex item, NOT position:
+    // absolute. Positioned content inside a <foreignObject> escapes the
+    // foreignObject's rendering context in WebKit — it then ignores both the
+    // SVG pan/zoom transform and the foreignObject's opacity, so every card
+    // renders at full opacity stacked at the origin. Keep this in flow.
     const flagSrc = variant === "master" ? COUNTRY_ICON[d.country] : null;
     const flag = flagSrc ? `<img src="${flagSrc}" alt="${esc(d.country)}" style="
-        position:absolute;
-        top:-0.4rem;
-        right:0.2rem;
+        flex:none;
+        margin-top:${-(settings.cardPadTop + 0.4)}rem;
+        margin-right:${-(settings.cardPadH - 0.2)}rem;
         width:1.5rem;
         height:auto;
         border-radius:0.125rem;
@@ -566,7 +571,6 @@ async function _2(FileAttachment,d3)
     const areas = variant === "zone" ? areasOf(d) : [];
     return `
       <${tag} class="poppins" ${linkAttrs} style="
-        position:relative;
         width:fit-content;
         min-height:auto;
         box-sizing:border-box;
@@ -581,14 +585,18 @@ async function _2(FileAttachment,d3)
         gap:0.25rem;
         box-shadow:0 1px 0 rgba(0,0,0,0.02);
       ">
-        ${flag}
-        <div class="poppins" style="
-          font-size:${t.partner}rem;
-          font-weight:500;
-          line-height:1;
-          color:${chart.color};
-          white-space:pre-line;
-        ">${d.partner || ""}</div>
+        <div style="display:flex; align-items:flex-start; gap:0.5rem;">
+          <div class="poppins" style="
+            flex:1 1 auto;
+            min-width:0;
+            font-size:${t.partner}rem;
+            font-weight:500;
+            line-height:1;
+            color:${chart.color};
+            white-space:pre-line;
+          ">${d.partner || ""}</div>
+          ${flag}
+        </div>
 
         <div class="poppins" style="
           font-size:${t.label}rem;
